@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — Elite Motors</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body class="ltr admin-body">
+
+  <nav class="admin-nav">
+    <div class="admin-nav-inner">
+      <span class="admin-brand">◆ Elite Motors Admin</span>
+      <div class="admin-nav-actions">
+        <a href="{{ url_for('index') }}" class="btn btn-ghost btn-sm" target="_blank">View Site</a>
+        <a href="{{ url_for('admin_logout') }}" class="btn btn-outline btn-sm">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="admin-container">
+    <div class="admin-header">
+      <h1>Car Listings</h1>
+      <a href="{{ url_for('admin_car_new') }}" class="btn btn-gold">+ Add New Car</a>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-container">
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% if cars %}
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Photo</th>
+            <th>Car</th>
+            <th>Year</th>
+            <th>Price (SAR)</th>
+            <th>Mileage</th>
+            <th>Color</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for car in cars %}
+          <tr class="{{ 'row-sold' if car.is_sold else '' }}">
+            <td>
+              {% if car.primary_photo %}
+                <img src="{{ url_for('static', filename='uploads/' + car.primary_photo) }}"
+                     class="admin-thumb" alt="{{ car.display_name }}" />
+              {% else %}
+                <div class="admin-thumb-empty">No Photo</div>
+              {% endif %}
+            </td>
+            <td>
+              <strong>{{ car.display_name }}</strong><br />
+              <small class="text-muted">{{ car.photos | length }} photo(s)</small>
+            </td>
+            <td>{{ car.year }}</td>
+            <td>{{ "{:,.0f}".format(car.price) }}</td>
+            <td>{{ "{:,.0f}".format(car.mileage) }} km</td>
+            <td>{{ car.color }}</td>
+            <td>
+              <span class="status-badge {{ 'sold' if car.is_sold else 'available' }}">
+                {{ "Sold" if car.is_sold else "Available" }}
+              </span>
+            </td>
+            <td>
+              <div class="action-btns">
+                <a href="{{ url_for('car_detail', car_id=car.id) }}" class="btn btn-ghost btn-xs" target="_blank">View</a>
+                <a href="{{ url_for('admin_car_edit', car_id=car.id) }}" class="btn btn-outline btn-xs">Edit</a>
+                <form method="POST" action="{{ url_for('admin_toggle_sold', car_id=car.id) }}" style="display:inline">
+                  <button class="btn btn-xs {{ 'btn-available' if car.is_sold else 'btn-sold' }}">
+                    {{ "Mark Available" if car.is_sold else "Mark Sold" }}
+                  </button>
+                </form>
+                <form method="POST" action="{{ url_for('admin_car_delete', car_id=car.id) }}" style="display:inline"
+                      onsubmit="return confirm('Delete {{ car.display_name }}? This cannot be undone.')">
+                  <button class="btn btn-danger btn-xs">Delete</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="admin-empty">
+      <p>No cars yet. <a href="{{ url_for('admin_car_new') }}">Add your first car →</a></p>
+    </div>
+    {% endif %}
+  </div>
+</body>
+</html>

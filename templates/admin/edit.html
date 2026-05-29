@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ 'Edit' if car else 'Add' }} Car — Elite Motors Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body class="ltr admin-body">
+
+  <nav class="admin-nav">
+    <div class="admin-nav-inner">
+      <span class="admin-brand">◆ Elite Motors Admin</span>
+      <div class="admin-nav-actions">
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-ghost btn-sm">← Dashboard</a>
+        <a href="{{ url_for('admin_logout') }}" class="btn btn-outline btn-sm">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="admin-container">
+    <h1>{{ 'Edit Car' if car else 'Add New Car' }}</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-container">
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" enctype="multipart/form-data" class="edit-form">
+
+      <div class="form-section">
+        <h3>Basic Information</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Make *</label>
+            <input type="text" name="make" required value="{{ car.make if car else '' }}" placeholder="e.g. Mercedes-Benz" />
+          </div>
+          <div class="form-group">
+            <label>Model *</label>
+            <input type="text" name="model" required value="{{ car.model if car else '' }}" placeholder="e.g. S-Class" />
+          </div>
+          <div class="form-group">
+            <label>Year *</label>
+            <input type="number" name="year" required min="1990" max="2030" value="{{ car.year if car else '' }}" placeholder="2024" />
+          </div>
+          <div class="form-group">
+            <label>Price (SAR) *</label>
+            <input type="number" name="price" required min="0" step="1000" value="{{ car.price if car else '' }}" placeholder="250000" />
+          </div>
+          <div class="form-group">
+            <label>Mileage (km) *</label>
+            <input type="number" name="mileage" required min="0" value="{{ car.mileage if car else '' }}" placeholder="15000" />
+          </div>
+          <div class="form-group">
+            <label>Color *</label>
+            <input type="text" name="color" required value="{{ car.color if car else '' }}" placeholder="e.g. Midnight Black" />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Description</h3>
+        <div class="form-group">
+          <label>Description (English)</label>
+          <textarea name="description_en" rows="4" placeholder="Full specs and description in English...">{{ car.description_en if car else '' }}</textarea>
+        </div>
+        <div class="form-group">
+          <label>الوصف (عربي)</label>
+          <textarea name="description_ar" rows="4" dir="rtl" style="text-align:right" placeholder="وصف كامل بالعربية...">{{ car.description_ar if car else '' }}</textarea>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Media</h3>
+        <div class="form-group">
+          <label>Photos (JPG / PNG) — drag or spin order matters</label>
+          <div class="upload-zone" id="photoUpload">
+            <input type="file" name="photos" multiple accept=".jpg,.jpeg,.png,.webp" id="photoInput" />
+            <div class="upload-hint">
+              <span class="upload-icon">📸</span>
+              <span>Click or drag photos here</span>
+              <small>First photo = thumbnail. All photos used for 360° viewer. Max 50MB each.</small>
+            </div>
+          </div>
+          <div id="photoPreview" class="photo-preview-strip"></div>
+        </div>
+
+        {% if car and car.photos %}
+        <div class="existing-photos">
+          <h4>Existing Photos</h4>
+          <div class="existing-photo-grid">
+            {% for photo in car.photos %}
+            <div class="existing-photo">
+              <img src="{{ url_for('static', filename='uploads/' + photo.filename) }}" alt="Photo {{ loop.index }}" />
+              <form method="POST" action="{{ url_for('admin_photo_delete', photo_id=photo.id) }}"
+                    onsubmit="return confirm('Delete this photo?')">
+                <button class="photo-delete-btn" type="submit">✕</button>
+              </form>
+              <span class="photo-order">#{{ loop.index }}</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="form-group">
+          <label>Video URL (YouTube link or direct .mp4 URL)</label>
+          <input type="url" name="video_url" value="{{ car.video_url if car else '' }}" placeholder="https://youtube.com/watch?v=... or https://example.com/car.mp4" />
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-gold btn-lg">{{ 'Save Changes' if car else 'Add Car' }}</button>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-ghost btn-lg">Cancel</a>
+      </div>
+
+    </form>
+  </div>
+
+  <script>
+    // Photo preview on select
+    document.getElementById('photoInput').addEventListener('change', function(e) {
+      const preview = document.getElementById('photoPreview');
+      preview.innerHTML = '';
+      for (const file of e.target.files) {
+        const reader = new FileReader();
+        reader.onload = ev => {
+          const img = document.createElement('img');
+          img.src = ev.target.result;
+          img.className = 'preview-thumb';
+          preview.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Drag-over styling for upload zone
+    const zone = document.getElementById('photoUpload');
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+    zone.addEventListener('drop', e => {
+      e.preventDefault();
+      zone.classList.remove('dragover');
+      document.getElementById('photoInput').files = e.dataTransfer.files;
+      document.getElementById('photoInput').dispatchEvent(new Event('change'));
+    });
+  </script>
+</body>
+</html>
