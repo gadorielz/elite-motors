@@ -9,7 +9,7 @@
   <div class="hero-bg"></div>
   <div class="hero-content">
     <h1>{% if lang == 'ar' %}اكتشف سيارة أحلامك{% else %}Find Your Dream Car{% endif %}</h1>
-    <p>{% if lang == 'ar' %}مجموعة حصرية من أفخم السيارات في المملكة العربية السعودية{% else %}Exclusive collection of the finest luxury vehicles in Saudi Arabia{% endif %}</p>
+    <p>{% if lang == 'ar' %}مجموعة حصرية من أفخم السيارات في الولايات المتحدة{% else %}Exclusive collection of the finest luxury vehicles in the USA{% endif %}</p>
 
     <!-- SEARCH BAR -->
     <form class="search-bar" method="GET" action="{{ url_for('index') }}">
@@ -50,7 +50,7 @@
     </div>
 
     <div class="filter-group filter-range">
-      <label>{% if lang == 'ar' %}السعر (ر.س){% else %}Price (SAR){% endif %}</label>
+      <label>{% if lang == 'ar' %}السعر ($){% else %}Price (USD){% endif %}</label>
       <div class="range-row">
         <input type="number" name="min_price" placeholder="{% if lang == 'ar' %}من{% else %}Min{% endif %}" value="{{ args.get('min_price', '') }}" min="0" />
         <span>—</span>
@@ -105,7 +105,7 @@
     <div class="car-card-body">
       <h3 class="car-name">{{ car.display_name }}</h3>
       <div class="car-meta">
-        <span class="car-price">{% if lang == 'ar' %}{{ "{:,.0f}".format(car.price) }} ر.س{% else %}SAR {{ "{:,.0f}".format(car.price) }}{% endif %}</span>
+        <span class="car-price">{% if lang == 'ar' %}${{ "{:,.0f}".format(car.price) }}{% else %}${{ "{:,.0f}".format(car.price) }}{% endif %}</span>
         <span class="car-mileage">{{ "{:,.0f}".format(car.mileage) }} km</span>
       </div>
       <div class="car-color">
