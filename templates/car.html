@@ -77,7 +77,7 @@
       <h1 class="detail-title">{{ car.display_name }}</h1>
 
       <div class="detail-price">
-        {% if lang == 'ar' %}{{ "{:,.0f}".format(car.price) }} ريال سعودي{% else %}SAR {{ "{:,.0f}".format(car.price) }}{% endif %}
+        ${{ "{:,.0f}".format(car.price) }}
       </div>
 
       <!-- SPECS -->
