@@ -1,6 +1,8 @@
 import os
 import re
 import uuid
+import json
+import urllib.request
 from functools import wraps
 from datetime import datetime
 
@@ -384,6 +386,74 @@ def admin_photo_delete(photo_id):
     db.session.commit()
     flash("Photo deleted.", "success")
     return redirect(url_for("admin_car_edit", car_id=car_id))
+
+
+# ---------------------------------------------------------------------------
+# Chat & Inventory API
+# ---------------------------------------------------------------------------
+
+N8N_WEBHOOK_URL = os.environ.get(
+    "N8N_WEBHOOK_URL",
+    "https://n8n-production-da8e.up.railway.app/webhook/elite-motors-chat"
+)
+
+@app.route("/api/inventory")
+def api_inventory():
+    cars = Car.query.filter_by(is_sold=False).order_by(Car.created_at.desc()).all()
+    result = []
+    for c in cars:
+        result.append({
+            "id": c.id,
+            "make": c.make,
+            "model": c.model,
+            "year": c.year,
+            "price": c.price,
+            "mileage": c.mileage,
+            "color": c.color,
+            "description_en": c.description_en,
+            "description_ar": c.description_ar,
+        })
+    return jsonify(result)
+
+
+@app.route("/api/chat", methods=["POST"])
+@limiter.limit("30 per minute")
+def api_chat():
+    data = request.get_json(silent=True) or {}
+    message = data.get("message", "").strip()
+    lang = data.get("lang", "en")
+    inventory = data.get("inventory", [])
+
+    if not message:
+        return jsonify({"error": "empty message"}), 400
+
+    payload = json.dumps({
+        "message": message,
+        "lang": lang,
+        "inventory": inventory,
+    }).encode()
+
+    try:
+        req = urllib.request.Request(
+            N8N_WEBHOOK_URL,
+            data=payload,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            body = json.loads(resp.read())
+        # n8n returns the DeepSeek reply under various possible keys
+        reply = (
+            body.get("reply")
+            or body.get("message")
+            or body.get("output")
+            or body.get("text")
+            or (body.get("choices") or [{}])[0].get("message", {}).get("content", "")
+            or str(body)
+        )
+        return jsonify({"reply": reply})
+    except Exception as e:
+        return jsonify({"reply": "Sorry, I'm having trouble connecting right now. Please try again shortly."}), 200
 
 
 # ---------------------------------------------------------------------------
