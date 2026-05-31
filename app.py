@@ -392,10 +392,8 @@ def admin_photo_delete(photo_id):
 # Chat & Inventory API
 # ---------------------------------------------------------------------------
 
-N8N_WEBHOOK_URL = os.environ.get(
-    "N8N_WEBHOOK_URL",
-    "https://n8n-production-da8e.up.railway.app/webhook/elite-motors-chat"
-)
+DEEPSEEK_API_KEY = os.environ.get("DEEPSEEK_API_KEY", "sk-ef68c5d505bd46d68cdef8f7a1029490")
+DEEPSEEK_URL = "https://api.deepseek.com/v1/chat/completions"
 
 @app.route("/api/inventory")
 def api_inventory():
@@ -427,30 +425,54 @@ def api_chat():
     if not message:
         return jsonify({"error": "empty message"}), 400
 
+    # Build bilingual system prompt with live inventory
+    if inventory:
+        inv_text = "\n".join(
+            f"- {c.get('year')} {c.get('make')} {c.get('model')}, {c.get('color')}, "
+            f"{int(c.get('mileage',0)):,} km, SAR {int(c.get('price',0)):,}"
+            for c in inventory
+        )
+    else:
+        inv_text = "No cars currently available" if lang == "en" else "لا توجد سيارات متاحة حالياً"
+
+    if lang == "ar":
+        system_prompt = (
+            "أنت مساعد مبيعات متخصص لمعرض النخبة للسيارات الفاخرة. "
+            "ردودك باللغة العربية فقط. كن ودوداً ومفيداً ومحترفاً.\n\n"
+            f"السيارات المتاحة حالياً:\n{inv_text}\n\n"
+            "ساعد العميل في اختيار السيارة المناسبة وأجب على استفساراته."
+        )
+    else:
+        system_prompt = (
+            "You are a sales assistant for Elite Motors luxury car dealership. "
+            "Be friendly, helpful and professional. Always respond in English.\n\n"
+            f"Current available inventory:\n{inv_text}\n\n"
+            "Help the customer find the right car and answer their questions."
+        )
+
     payload = json.dumps({
-        "message": message,
-        "lang": lang,
-        "inventory": inventory,
+        "model": "deepseek-chat",
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": message},
+        ],
+        "max_tokens": 500,
+        "temperature": 0.7,
     }).encode()
 
     try:
         req = urllib.request.Request(
-            N8N_WEBHOOK_URL,
+            DEEPSEEK_URL,
             data=payload,
-            headers={"Content-Type": "application/json"},
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {DEEPSEEK_API_KEY}",
+            },
             method="POST",
         )
-        with urllib.request.urlopen(req, timeout=15) as resp:
+        with urllib.request.urlopen(req, timeout=20) as resp:
             body = json.loads(resp.read())
-        # n8n returns the DeepSeek reply under various possible keys
-        reply = (
-            body.get("reply")
-            or body.get("message")
-            or body.get("output")
-            or body.get("text")
-            or (body.get("choices") or [{}])[0].get("message", {}).get("content", "")
-            or str(body)
-        )
+        reply = body["choices"][0]["message"]["content"]
         return jsonify({"reply": reply})
     except Exception as e:
         return jsonify({"reply": "Sorry, I'm having trouble connecting right now. Please try again shortly."}), 200
