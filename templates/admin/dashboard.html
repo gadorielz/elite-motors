@@ -55,7 +55,7 @@
           <tr class="{{ 'row-sold' if car.is_sold else '' }}">
             <td>
               {% if car.primary_photo %}
-                <img src="{{ url_for('static', filename='uploads/' + car.primary_photo) }}"
+                <img src="{{ photo_url(car.primary_photo) }}"
                      class="admin-thumb" alt="{{ car.display_name }}" />
               {% else %}
                 <div class="admin-thumb-empty">No Photo</div>
