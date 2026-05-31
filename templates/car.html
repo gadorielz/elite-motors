@@ -39,7 +39,7 @@
         </div>
         <div class="thumb-strip" id="thumbStrip">
           {% for photo in photos %}
-            <img src="{{ url_for('static', filename='uploads/' + photo.filename) }}"
+            <img src="{{ photo_url(photo.filename) }}"
                  alt="Photo {{ loop.index }}"
                  class="thumb {% if loop.first %}active{% endif %}"
                  data-index="{{ loop.index0 }}" />
@@ -47,7 +47,7 @@
         </div>
       {% elif photos | length == 1 %}
         <div class="single-photo">
-          <img src="{{ url_for('static', filename='uploads/' + photos[0].filename) }}" alt="{{ car.display_name }}" />
+          <img src="{{ photo_url(photos[0].filename) }}" alt="{{ car.display_name }}" />
         </div>
       {% else %}
         <div class="no-photo-lg">{% if lang == 'ar' %}لا توجد صور{% else %}No photos available{% endif %}</div>
@@ -169,7 +169,7 @@
 <script>
   const PHOTOS = [
     {% for photo in car.photos %}
-    "{{ url_for('static', filename='uploads/' + photo.filename) }}",
+    "{{ photo_url(photo.filename) }}",
     {% endfor %}
   ];
 </script>
