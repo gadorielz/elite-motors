@@ -97,7 +97,7 @@
           <div class="existing-photo-grid">
             {% for photo in car.photos %}
             <div class="existing-photo">
-              <img src="{{ url_for('static', filename='uploads/' + photo.filename) }}" alt="Photo {{ loop.index }}" />
+              <img src="{{ photo_url(photo.filename) }}" alt="Photo {{ loop.index }}" />
               <form method="POST" action="{{ url_for('admin_photo_delete', photo_id=photo.id) }}"
                     onsubmit="return confirm('Delete this photo?')">
                 <button class="photo-delete-btn" type="submit">✕</button>
