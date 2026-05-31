@@ -4,6 +4,10 @@ import uuid
 from functools import wraps
 from datetime import datetime
 
+import cloudinary
+import cloudinary.uploader
+import cloudinary.utils
+
 from flask import (
     Flask, render_template, request, redirect, url_for,
     session, flash, jsonify, abort
@@ -22,7 +26,13 @@ from models import db, Car, Photo
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "change-me-in-production-please")
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///cars.db")
+
+# Fix Railway's postgres:// → postgresql:// for SQLAlchemy
+database_url = os.environ.get("DATABASE_URL", "sqlite:///cars.db")
+if database_url.startswith("postgres://"):
+    database_url = database_url.replace("postgres://", "postgresql://", 1)
+
+app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["UPLOAD_FOLDER"] = os.path.join(app.static_folder, "uploads")
 app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024  # 50 MB
@@ -34,6 +44,12 @@ ALLOWED_EXT = ALLOWED_IMAGE_EXT | ALLOWED_VIDEO_EXT
 CARS_PER_PAGE = 12
 
 WHATSAPP_NUMBER = os.environ.get("WHATSAPP_NUMBER", "966500000000")
+
+# Cloudinary config (reads CLOUDINARY_URL env var automatically)
+cloudinary.config(
+    cloudinary_url=os.environ.get("CLOUDINARY_URL", "")
+)
+USE_CLOUDINARY = bool(os.environ.get("CLOUDINARY_URL", ""))
 
 db.init_app(app)
 
@@ -48,6 +64,17 @@ os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
 
 # ---------------------------------------------------------------------------
+# HTTPS redirect
+# ---------------------------------------------------------------------------
+
+@app.before_request
+def force_https():
+    # On Railway, X-Forwarded-Proto is set by the load balancer
+    if request.headers.get("X-Forwarded-Proto", "https") == "http":
+        return redirect(request.url.replace("http://", "https://", 1), code=301)
+
+
+# ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
@@ -58,10 +85,47 @@ def allowed_file(filename, allowed=None):
 
 
 def save_file(file_obj):
-    ext = file_obj.filename.rsplit(".", 1)[1].lower()
-    fname = f"{uuid.uuid4().hex}.{ext}"
-    file_obj.save(os.path.join(app.config["UPLOAD_FOLDER"], fname))
-    return fname
+    """Upload to Cloudinary if configured, otherwise save locally."""
+    if USE_CLOUDINARY:
+        result = cloudinary.uploader.upload(
+            file_obj,
+            folder="elite-motors",
+            resource_type="image"
+        )
+        return result["secure_url"]
+    else:
+        ext = file_obj.filename.rsplit(".", 1)[1].lower()
+        fname = f"{uuid.uuid4().hex}.{ext}"
+        file_obj.save(os.path.join(app.config["UPLOAD_FOLDER"], fname))
+        return fname
+
+
+def delete_file(filename):
+    """Delete from Cloudinary or local storage."""
+    if USE_CLOUDINARY and filename.startswith("http"):
+        # Extract public_id from Cloudinary URL
+        try:
+            # URL format: https://res.cloudinary.com/<cloud>/image/upload/v123/elite-motors/filename
+            parts = filename.split("/upload/")
+            if len(parts) == 2:
+                public_id = parts[1].split("/", 1)[-1]  # remove version
+                public_id = public_id.rsplit(".", 1)[0]  # remove extension
+                cloudinary.uploader.destroy(f"elite-motors/{public_id.split('/')[-1]}")
+        except Exception:
+            pass
+    else:
+        fpath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+        if os.path.exists(fpath):
+            os.remove(fpath)
+
+
+def photo_url(filename):
+    """Return the correct URL for a photo filename (Cloudinary URL or static)."""
+    if not filename:
+        return ""
+    if filename.startswith("http"):
+        return filename
+    return url_for("static", filename=f"uploads/{filename}")
 
 
 def login_required(f):
@@ -73,18 +137,15 @@ def login_required(f):
     return decorated
 
 
+# Cache the password hash in memory (no file needed)
+_admin_hash_cache = None
+
 def get_admin_password_hash():
+    global _admin_hash_cache
     raw = os.environ.get("ADMIN_PASSWORD", "admin1234")
-    # Store hash in a simple file so we only compute once
-    hash_file = os.path.join(app.instance_path, "admin_hash.txt")
-    os.makedirs(app.instance_path, exist_ok=True)
-    if os.path.exists(hash_file):
-        with open(hash_file) as f:
-            return f.read().strip()
-    h = generate_password_hash(raw)
-    with open(hash_file, "w") as f:
-        f.write(h)
-    return h
+    if _admin_hash_cache is None:
+        _admin_hash_cache = generate_password_hash(raw)
+    return _admin_hash_cache
 
 
 # ---------------------------------------------------------------------------
@@ -94,7 +155,7 @@ def get_admin_password_hash():
 @app.context_processor
 def inject_globals():
     lang = session.get("lang", "en")
-    return dict(lang=lang, whatsapp_number=WHATSAPP_NUMBER)
+    return dict(lang=lang, whatsapp_number=WHATSAPP_NUMBER, photo_url=photo_url)
 
 
 # ---------------------------------------------------------------------------
@@ -154,7 +215,6 @@ def index():
     pagination = query.order_by(Car.created_at.desc()).paginate(page=page, per_page=CARS_PER_PAGE, error_out=False)
     cars = pagination.items
 
-    # For filter dropdowns
     brands = [r[0] for r in db.session.query(Car.make).distinct().order_by(Car.make).all()]
     colors = [r[0] for r in db.session.query(Car.color).distinct().order_by(Car.color).all()]
 
@@ -190,14 +250,11 @@ def test_drive():
         flash("Please fill all fields." if session.get("lang") != "ar" else "يرجى ملء جميع الحقول.", "error")
         return redirect(request.referrer or url_for("index"))
 
-    # Sanitize
     phone = re.sub(r"[^\d+\-\s]", "", phone)
-
     car = Car.query.get(car_id)
-    car_name = car.display_name if car else "a car"
 
     flash(
-        f"Request received! We'll contact you shortly."
+        "Request received! We'll contact you shortly."
         if session.get("lang") != "ar"
         else "تم استلام طلبك! سنتواصل معك قريبًا.",
         "success",
@@ -251,9 +308,8 @@ def admin_car_new():
             video_url=request.form.get("video_url", "").strip(),
         )
         db.session.add(car)
-        db.session.flush()  # get car.id
+        db.session.flush()
 
-        # Handle photos
         photos = request.files.getlist("photos")
         for i, f in enumerate(photos):
             if f and f.filename and allowed_file(f.filename, ALLOWED_IMAGE_EXT):
@@ -283,7 +339,6 @@ def admin_car_edit(car_id):
         car.description_ar = request.form.get("description_ar", "").strip()
         car.video_url = request.form.get("video_url", "").strip()
 
-        # Handle new photos
         photos = request.files.getlist("photos")
         current_max_order = max((p.order for p in car.photos), default=-1)
         for i, f in enumerate(photos):
@@ -302,11 +357,8 @@ def admin_car_edit(car_id):
 @login_required
 def admin_car_delete(car_id):
     car = Car.query.get_or_404(car_id)
-    # Delete photo files
     for photo in car.photos:
-        fpath = os.path.join(app.config["UPLOAD_FOLDER"], photo.filename)
-        if os.path.exists(fpath):
-            os.remove(fpath)
+        delete_file(photo.filename)
     db.session.delete(car)
     db.session.commit()
     flash("Car deleted.", "success")
@@ -327,9 +379,7 @@ def admin_toggle_sold(car_id):
 def admin_photo_delete(photo_id):
     photo = Photo.query.get_or_404(photo_id)
     car_id = photo.car_id
-    fpath = os.path.join(app.config["UPLOAD_FOLDER"], photo.filename)
-    if os.path.exists(fpath):
-        os.remove(fpath)
+    delete_file(photo.filename)
     db.session.delete(photo)
     db.session.commit()
     flash("Photo deleted.", "success")
@@ -346,35 +396,23 @@ def seed_data():
 
     cars_data = [
         dict(
-            make="Mercedes-Benz",
-            model="S-Class",
-            year=2023,
-            price=450000,
-            mileage=15000,
-            color="Obsidian Black",
-            description_en="Luxury flagship sedan with AMG package. Full options, panoramic roof, massage seats, night vision, and Burmester surround sound.",
-            description_ar="سيارة مرسيدس بنز S-Class الفاخرة مع باقة AMG. خيارات كاملة، سقف بانورامي، مقاعد مساج، رؤية ليلية، وصوت Burmester المحيطي.",
-            video_url="",
-            is_sold=False,
+            make="Mercedes-Benz", model="S-Class", year=2023,
+            price=450000, mileage=15000, color="Obsidian Black",
+            description_en="Luxury flagship sedan with AMG package. Full options, panoramic roof, massage seats, night vision.",
+            description_ar="سيارة مرسيدس بنز S-Class الفاخرة مع باقة AMG.",
+            video_url="", is_sold=False,
         ),
         dict(
-            make="BMW",
-            model="X7",
-            year=2022,
-            price=320000,
-            mileage=28000,
-            color="Alpine White",
-            description_en="Full-size luxury SUV in immaculate condition. M Sport package, 7 seats, head-up display, laser headlights.",
-            description_ar="سيارة دفع رباعي فاخرة بحالة ممتازة. باقة M Sport، 7 مقاعد، شاشة رأسية، مصابيح ليزر.",
-            video_url="",
-            is_sold=False,
+            make="BMW", model="X7", year=2022,
+            price=320000, mileage=28000, color="Alpine White",
+            description_en="Full-size luxury SUV. M Sport package, 7 seats, head-up display, laser headlights.",
+            description_ar="سيارة دفع رباعي فاخرة. باقة M Sport، 7 مقاعد.",
+            video_url="", is_sold=False,
         ),
     ]
 
     for data in cars_data:
-        car = Car(**data)
-        db.session.add(car)
-
+        db.session.add(Car(**data))
     db.session.commit()
 
 
