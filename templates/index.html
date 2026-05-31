@@ -92,7 +92,7 @@
   <a href="{{ url_for('car_detail', car_id=car.id) }}" class="car-card {% if car.is_sold %}car-sold{% endif %}">
     <div class="car-card-img">
       {% if car.primary_photo %}
-        <img src="{{ url_for('static', filename='uploads/' + car.primary_photo) }}" alt="{{ car.display_name }}" loading="lazy" />
+        <img src="{{ photo_url(car.primary_photo) }}" alt="{{ car.display_name }}" loading="lazy" />
       {% else %}
         <div class="no-photo">
           <span>{% if lang == 'ar' %}لا توجد صورة{% else %}No Photo{% endif %}</span>
