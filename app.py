@@ -29,7 +29,7 @@ from models import db, Car, Photo
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "change-me-in-production-please")
 
-# Fix Railway's postgres:// → postgresql:// for SQLAlchemy
+# Fix Railway's postgres:// â postgresql:// for SQLAlchemy
 database_url = os.environ.get("DATABASE_URL", "sqlite:///cars.db")
 if database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql://", 1)
@@ -237,7 +237,7 @@ def car_detail(car_id):
     lang = session.get("lang", "en")
     wa_msg = f"Hi, I'm interested in the {car.display_name}"
     if lang == "ar":
-        wa_msg = f"مرحبا، أنا مهتم بـ {car.display_name}"
+        wa_msg = f"ÙØ±Ø­Ø¨Ø§Ø Ø£ÙØ§ ÙÙØªÙ Ø¨Ù {car.display_name}"
     return render_template("car.html", car=car, lang=lang, wa_msg=wa_msg)
 
 
@@ -249,7 +249,7 @@ def test_drive():
     car_id = request.form.get("car_id", "").strip()
 
     if not name or not phone:
-        flash("Please fill all fields." if session.get("lang") != "ar" else "يرجى ملء جميع الحقول.", "error")
+        flash("Please fill all fields." if session.get("lang") != "ar" else "ÙØ±Ø¬Ù ÙÙØ¡ Ø¬ÙÙØ¹ Ø§ÙØ­ÙÙÙ.", "error")
         return redirect(request.referrer or url_for("index"))
 
     phone = re.sub(r"[^\d+\-\s]", "", phone)
@@ -258,7 +258,7 @@ def test_drive():
     flash(
         "Request received! We'll contact you shortly."
         if session.get("lang") != "ar"
-        else "تم استلام طلبك! سنتواصل معك قريبًا.",
+        else "ØªÙ Ø§Ø³ØªÙØ§Ù Ø·ÙØ¨Ù! Ø³ÙØªÙØ§ØµÙ ÙØ¹Ù ÙØ±ÙØ¨ÙØ§.",
         "success",
     )
     return redirect(url_for("car_detail", car_id=car_id) if car_id else url_for("index"))
@@ -392,8 +392,7 @@ def admin_photo_delete(photo_id):
 # Chat & Inventory API
 # ---------------------------------------------------------------------------
 
-DEEPSEEK_API_KEY = os.environ.get("DEEPSEEK_API_KEY", "sk-ef68c5d505bd46d68cdef8f7a1029490")
-DEEPSEEK_URL = "https://api.deepseek.com/v1/chat/completions"
+CHAT_API_URL = "https://text.pollinations.ai/openai"
 
 @app.route("/api/inventory")
 def api_inventory():
@@ -433,14 +432,14 @@ def api_chat():
             for c in inventory
         )
     else:
-        inv_text = "No cars currently available" if lang == "en" else "لا توجد سيارات متاحة حالياً"
+        inv_text = "No cars currently available" if lang == "en" else "ÙØ§ ØªÙØ¬Ø¯ Ø³ÙØ§Ø±Ø§Øª ÙØªØ§Ø­Ø© Ø­Ø§ÙÙØ§Ù"
 
     if lang == "ar":
         system_prompt = (
-            "أنت مساعد مبيعات متخصص لمعرض النخبة للسيارات الفاخرة. "
-            "ردودك باللغة العربية فقط. كن ودوداً ومفيداً ومحترفاً.\n\n"
-            f"السيارات المتاحة حالياً:\n{inv_text}\n\n"
-            "ساعد العميل في اختيار السيارة المناسبة وأجب على استفساراته."
+            "Ø£ÙØª ÙØ³Ø§Ø¹Ø¯ ÙØ¨ÙØ¹Ø§Øª ÙØªØ®ØµØµ ÙÙØ¹Ø±Ø¶ Ø§ÙÙØ®Ø¨Ø© ÙÙØ³ÙØ§Ø±Ø§Øª Ø§ÙÙØ§Ø®Ø±Ø©. "
+            "Ø±Ø¯ÙØ¯Ù Ø¨Ø§ÙÙØºØ© Ø§ÙØ¹Ø±Ø¨ÙØ© ÙÙØ·. ÙÙ ÙØ¯ÙØ¯Ø§Ù ÙÙÙÙØ¯Ø§Ù ÙÙØ­ØªØ±ÙØ§Ù.\n\n"
+            f"Ø§ÙØ³ÙØ§Ø±Ø§Øª Ø§ÙÙØªØ§Ø­Ø© Ø­Ø§ÙÙØ§Ù:\n{inv_text}\n\n"
+            "Ø³Ø§Ø¹Ø¯ Ø§ÙØ¹ÙÙÙ ÙÙ Ø§Ø®ØªÙØ§Ø± Ø§ÙØ³ÙØ§Ø±Ø© Ø§ÙÙÙØ§Ø³Ø¨Ø© ÙØ£Ø¬Ø¨ Ø¹ÙÙ Ø§Ø³ØªÙØ³Ø§Ø±Ø§ØªÙ."
         )
     else:
         system_prompt = (
@@ -451,26 +450,24 @@ def api_chat():
         )
 
     payload = json.dumps({
-        "model": "deepseek-chat",
+        "model": "openai",
         "messages": [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": message},
         ],
         "max_tokens": 500,
         "temperature": 0.7,
+        "seed": 42,
     }).encode()
 
     try:
         req = urllib.request.Request(
-            DEEPSEEK_URL,
+            CHAT_API_URL,
             data=payload,
-            headers={
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {DEEPSEEK_API_KEY}",
-            },
+            headers={"Content-Type": "application/json"},
             method="POST",
         )
-        with urllib.request.urlopen(req, timeout=20) as resp:
+        with urllib.request.urlopen(req, timeout=30) as resp:
             body = json.loads(resp.read())
         reply = body["choices"][0]["message"]["content"]
         return jsonify({"reply": reply})
@@ -491,14 +488,14 @@ def seed_data():
             make="Mercedes-Benz", model="S-Class", year=2023,
             price=450000, mileage=15000, color="Obsidian Black",
             description_en="Luxury flagship sedan with AMG package. Full options, panoramic roof, massage seats, night vision.",
-            description_ar="سيارة مرسيدس بنز S-Class الفاخرة مع باقة AMG.",
+            description_ar="Ø³ÙØ§Ø±Ø© ÙØ±Ø³ÙØ¯Ø³ Ø¨ÙØ² S-Class Ø§ÙÙØ§Ø®Ø±Ø© ÙØ¹ Ø¨Ø§ÙØ© AMG.",
             video_url="", is_sold=False,
         ),
         dict(
             make="BMW", model="X7", year=2022,
             price=320000, mileage=28000, color="Alpine White",
             description_en="Full-size luxury SUV. M Sport package, 7 seats, head-up display, laser headlights.",
-            description_ar="سيارة دفع رباعي فاخرة. باقة M Sport، 7 مقاعد.",
+            description_ar="Ø³ÙØ§Ø±Ø© Ø¯ÙØ¹ Ø±Ø¨Ø§Ø¹Ù ÙØ§Ø®Ø±Ø©. Ø¨Ø§ÙØ© M SportØ 7 ÙÙØ§Ø¹Ø¯.",
             video_url="", is_sold=False,
         ),
     ]
