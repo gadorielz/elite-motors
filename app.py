@@ -29,7 +29,7 @@ from models import db, Car, Photo
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "change-me-in-production-please")
 
-# Fix Railway's postgres:// Ã¢ÂÂ postgresql:// for SQLAlchemy
+# Fix Railway's postgres:// → postgresql:// for SQLAlchemy
 database_url = os.environ.get("DATABASE_URL", "sqlite:///cars.db")
 if database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql://", 1)
@@ -237,7 +237,7 @@ def car_detail(car_id):
     lang = session.get("lang", "en")
     wa_msg = f"Hi, I'm interested in the {car.display_name}"
     if lang == "ar":
-        wa_msg = f"ÃÂÃÂ±ÃÂ­ÃÂ¨ÃÂ§ÃÂ ÃÂ£ÃÂÃÂ§ ÃÂÃÂÃÂªÃÂ ÃÂ¨ÃÂ {car.display_name}"
+        wa_msg = f"مرحبا، أنا مهتم بـ {car.display_name}"
     return render_template("car.html", car=car, lang=lang, wa_msg=wa_msg)
 
 
@@ -249,7 +249,7 @@ def test_drive():
     car_id = request.form.get("car_id", "").strip()
 
     if not name or not phone:
-        flash("Please fill all fields." if session.get("lang") != "ar" else "ÃÂÃÂ±ÃÂ¬ÃÂ ÃÂÃÂÃÂ¡ ÃÂ¬ÃÂÃÂÃÂ¹ ÃÂ§ÃÂÃÂ­ÃÂÃÂÃÂ.", "error")
+        flash("Please fill all fields." if session.get("lang") != "ar" else "يرجى ملء جميع الحقول.", "error")
         return redirect(request.referrer or url_for("index"))
 
     phone = re.sub(r"[^\d+\-\s]", "", phone)
@@ -258,7 +258,7 @@ def test_drive():
     flash(
         "Request received! We'll contact you shortly."
         if session.get("lang") != "ar"
-        else "ÃÂªÃÂ ÃÂ§ÃÂ³ÃÂªÃÂÃÂ§ÃÂ ÃÂ·ÃÂÃÂ¨ÃÂ! ÃÂ³ÃÂÃÂªÃÂÃÂ§ÃÂµÃÂ ÃÂÃÂ¹ÃÂ ÃÂÃÂ±ÃÂÃÂ¨ÃÂÃÂ§.",
+        else "تم استلام طلبك! سنتواصل معك قريبًا.",
         "success",
     )
     return redirect(url_for("car_detail", car_id=car_id) if car_id else url_for("index"))
@@ -432,31 +432,47 @@ def api_chat():
             for c in inventory
         )
     else:
-        inv_text = "No cars currently available" if lang == "en" else "ÃÂÃÂ§ ÃÂªÃÂÃÂ¬ÃÂ¯ ÃÂ³ÃÂÃÂ§ÃÂ±ÃÂ§ÃÂª ÃÂÃÂªÃÂ§ÃÂ­ÃÂ© ÃÂ­ÃÂ§ÃÂÃÂÃÂ§ÃÂ"
+        inv_text = "No cars currently available" if lang == "en" else "لا توجد سيارات متاحة حالياً"
 
     if lang == "ar":
         system_prompt = (
-            "ÃÂ£ÃÂÃÂª ÃÂÃÂ³ÃÂ§ÃÂ¹ÃÂ¯ ÃÂÃÂ¨ÃÂÃÂ¹ÃÂ§ÃÂª ÃÂÃÂªÃÂ®ÃÂµÃÂµ ÃÂÃÂÃÂ¹ÃÂ±ÃÂ¶ ÃÂ§ÃÂÃÂÃÂ®ÃÂ¨ÃÂ© ÃÂÃÂÃÂ³ÃÂÃÂ§ÃÂ±ÃÂ§ÃÂª ÃÂ§ÃÂÃÂÃÂ§ÃÂ®ÃÂ±ÃÂ©. "
-            "ÃÂ±ÃÂ¯ÃÂÃÂ¯ÃÂ ÃÂ¨ÃÂ§ÃÂÃÂÃÂºÃÂ© ÃÂ§ÃÂÃÂ¹ÃÂ±ÃÂ¨ÃÂÃÂ© ÃÂÃÂÃÂ·. ÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¯ÃÂ§ÃÂ ÃÂÃÂÃÂÃÂÃÂ¯ÃÂ§ÃÂ ÃÂÃÂÃÂ­ÃÂªÃÂ±ÃÂÃÂ§ÃÂ.\n\n"
-            f"ÃÂ§ÃÂÃÂ³ÃÂÃÂ§ÃÂ±ÃÂ§ÃÂª ÃÂ§ÃÂÃÂÃÂªÃÂ§ÃÂ­ÃÂ© ÃÂ­ÃÂ§ÃÂÃÂÃÂ§ÃÂ:\n{inv_text}\n\n"
-            "ÃÂ³ÃÂ§ÃÂ¹ÃÂ¯ ÃÂ§ÃÂÃÂ¹ÃÂÃÂÃÂ ÃÂÃÂ ÃÂ§ÃÂ®ÃÂªÃÂÃÂ§ÃÂ± ÃÂ§ÃÂÃÂ³ÃÂÃÂ§ÃÂ±ÃÂ© ÃÂ§ÃÂÃÂÃÂÃÂ§ÃÂ³ÃÂ¨ÃÂ© ÃÂÃÂ£ÃÂ¬ÃÂ¨ ÃÂ¹ÃÂÃÂ ÃÂ§ÃÂ³ÃÂªÃÂÃÂ³ÃÂ§ÃÂ±ÃÂ§ÃÂªÃÂ."
+            "أنت مساعد مبيعات متخصص لمعرض النخبة للسيارات الفاخرة. "
+            "ردودك باللغة العربية فقط. كن ودوداً ومفيداً ومحترفاً.\n\n"
+            f"السيارات المتاحة حامياً:\n{inv_text}\n\n"
+            "ساعد العميل في اختيار السيارة المناسبة وأجب على استفساراته."
         )
     else:
         system_prompt = (
-            "You are a sales assistant for Elite Motors luxury car dealership. "
-            "Be friendly, helpful and professional. Always respond in English.\n\n"
+            "You are a sales assistant for Elite Motors luxury car dealership in Saudi Arabia. "
+            "Be friendly, helpful and professional. Always respond in English. "
+            "Keep replies SHORT - maximum 3 sentences. Never use bullet points or long lists.\n\n"
+            "About us: Elite Motors specializes in luxury and premium cars. "
+            "WhatsApp: +966500000000. Location: Saudi Arabia.\n\n"
             f"Current available inventory:\n{inv_text}\n\n"
-            "Help the customer find the right car and answer their questions."
+            "Help the customer find the right car. If they want to buy or inquire, direct them to WhatsApp."
         )
 
+    payload = json.dumps({
+        "model": "openai",
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": message},
+        ],
+        "max_tokens": 150,
+        "temperature": 0.7,
+        "seed": 42,
+    }).encode()
+
     try:
-        import urllib.parse as _up
-        _msg = _up.quote(message, safe='')
-        _sys = _up.quote(system_prompt, safe='')
-        _url = f"https://text.pollinations.ai/{_msg}?model=openai&seed=42&system={_sys}"
-        _req = urllib.request.Request(_url, headers={"User-Agent": "Mozilla/5.0"}, method="GET")
-        with urllib.request.urlopen(_req, timeout=30) as _resp:
-            reply = _resp.read().decode("utf-8")
+        req = urllib.request.Request(
+            CHAT_API_URL,
+            data=payload,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            body = json.loads(resp.read())
+        reply = body["choices"][0]["message"]["content"]
         return jsonify({"reply": reply})
     except Exception as e:
         return jsonify({"reply": "Sorry, I'm having trouble connecting right now. Please try again shortly."}), 200
@@ -475,14 +491,14 @@ def seed_data():
             make="Mercedes-Benz", model="S-Class", year=2023,
             price=450000, mileage=15000, color="Obsidian Black",
             description_en="Luxury flagship sedan with AMG package. Full options, panoramic roof, massage seats, night vision.",
-            description_ar="ÃÂ³ÃÂÃÂ§ÃÂ±ÃÂ© ÃÂÃÂ±ÃÂ³ÃÂÃÂ¯ÃÂ³ ÃÂ¨ÃÂÃÂ² S-Class ÃÂ§ÃÂÃÂÃÂ§ÃÂ®ÃÂ±ÃÂ© ÃÂÃÂ¹ ÃÂ¨ÃÂ§ÃÂÃÂ© AMG.",
+            description_ar="سيارة مرسيدس بنز S-Class الفاخرة مع باقة AMG.",
             video_url="", is_sold=False,
         ),
         dict(
             make="BMW", model="X7", year=2022,
             price=320000, mileage=28000, color="Alpine White",
             description_en="Full-size luxury SUV. M Sport package, 7 seats, head-up display, laser headlights.",
-            description_ar="ÃÂ³ÃÂÃÂ§ÃÂ±ÃÂ© ÃÂ¯ÃÂÃÂ¹ ÃÂ±ÃÂ¨ÃÂ§ÃÂ¹ÃÂ ÃÂÃÂ§ÃÂ®ÃÂ±ÃÂ©. ÃÂ¨ÃÂ§ÃÂÃÂ© M SportÃÂ 7 ÃÂÃÂÃÂ§ÃÂ¹ÃÂ¯.",
+            description_ar="سيارة دفع رباعي فاخرة. باقة M Sport، 7 مقاعد.",
             video_url="", is_sold=False,
         ),
     ]
@@ -494,7 +510,7 @@ def seed_data():
 
 # ---------------------------------------------------------------------------
 # Init
-# ---------------------------------------------------------------------------
+# ------------------------------------------------------------------------
 
 with app.app_context():
     db.create_all()
