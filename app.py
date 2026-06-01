@@ -29,7 +29,7 @@ from models import db, Car, Photo
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "change-me-in-production-please")
 
-# Fix Railway's postgres:// â postgresql:// for SQLAlchemy
+# Fix Railway's postgres:// Ã¢ÂÂ postgresql:// for SQLAlchemy
 database_url = os.environ.get("DATABASE_URL", "sqlite:///cars.db")
 if database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql://", 1)
@@ -237,7 +237,7 @@ def car_detail(car_id):
     lang = session.get("lang", "en")
     wa_msg = f"Hi, I'm interested in the {car.display_name}"
     if lang == "ar":
-        wa_msg = f"ÙØ±Ø­Ø¨Ø§Ø Ø£ÙØ§ ÙÙØªÙ Ø¨Ù {car.display_name}"
+        wa_msg = f"ÃÂÃÂ±ÃÂ­ÃÂ¨ÃÂ§ÃÂ ÃÂ£ÃÂÃÂ§ ÃÂÃÂÃÂªÃÂ ÃÂ¨ÃÂ {car.display_name}"
     return render_template("car.html", car=car, lang=lang, wa_msg=wa_msg)
 
 
@@ -249,7 +249,7 @@ def test_drive():
     car_id = request.form.get("car_id", "").strip()
 
     if not name or not phone:
-        flash("Please fill all fields." if session.get("lang") != "ar" else "ÙØ±Ø¬Ù ÙÙØ¡ Ø¬ÙÙØ¹ Ø§ÙØ­ÙÙÙ.", "error")
+        flash("Please fill all fields." if session.get("lang") != "ar" else "ÃÂÃÂ±ÃÂ¬ÃÂ ÃÂÃÂÃÂ¡ ÃÂ¬ÃÂÃÂÃÂ¹ ÃÂ§ÃÂÃÂ­ÃÂÃÂÃÂ.", "error")
         return redirect(request.referrer or url_for("index"))
 
     phone = re.sub(r"[^\d+\-\s]", "", phone)
@@ -258,7 +258,7 @@ def test_drive():
     flash(
         "Request received! We'll contact you shortly."
         if session.get("lang") != "ar"
-        else "ØªÙ Ø§Ø³ØªÙØ§Ù Ø·ÙØ¨Ù! Ø³ÙØªÙØ§ØµÙ ÙØ¹Ù ÙØ±ÙØ¨ÙØ§.",
+        else "ÃÂªÃÂ ÃÂ§ÃÂ³ÃÂªÃÂÃÂ§ÃÂ ÃÂ·ÃÂÃÂ¨ÃÂ! ÃÂ³ÃÂÃÂªÃÂÃÂ§ÃÂµÃÂ ÃÂÃÂ¹ÃÂ ÃÂÃÂ±ÃÂÃÂ¨ÃÂÃÂ§.",
         "success",
     )
     return redirect(url_for("car_detail", car_id=car_id) if car_id else url_for("index"))
@@ -432,14 +432,14 @@ def api_chat():
             for c in inventory
         )
     else:
-        inv_text = "No cars currently available" if lang == "en" else "ÙØ§ ØªÙØ¬Ø¯ Ø³ÙØ§Ø±Ø§Øª ÙØªØ§Ø­Ø© Ø­Ø§ÙÙØ§Ù"
+        inv_text = "No cars currently available" if lang == "en" else "ÃÂÃÂ§ ÃÂªÃÂÃÂ¬ÃÂ¯ ÃÂ³ÃÂÃÂ§ÃÂ±ÃÂ§ÃÂª ÃÂÃÂªÃÂ§ÃÂ­ÃÂ© ÃÂ­ÃÂ§ÃÂÃÂÃÂ§ÃÂ"
 
     if lang == "ar":
         system_prompt = (
-            "Ø£ÙØª ÙØ³Ø§Ø¹Ø¯ ÙØ¨ÙØ¹Ø§Øª ÙØªØ®ØµØµ ÙÙØ¹Ø±Ø¶ Ø§ÙÙØ®Ø¨Ø© ÙÙØ³ÙØ§Ø±Ø§Øª Ø§ÙÙØ§Ø®Ø±Ø©. "
-            "Ø±Ø¯ÙØ¯Ù Ø¨Ø§ÙÙØºØ© Ø§ÙØ¹Ø±Ø¨ÙØ© ÙÙØ·. ÙÙ ÙØ¯ÙØ¯Ø§Ù ÙÙÙÙØ¯Ø§Ù ÙÙØ­ØªØ±ÙØ§Ù.\n\n"
-            f"Ø§ÙØ³ÙØ§Ø±Ø§Øª Ø§ÙÙØªØ§Ø­Ø© Ø­Ø§ÙÙØ§Ù:\n{inv_text}\n\n"
-            "Ø³Ø§Ø¹Ø¯ Ø§ÙØ¹ÙÙÙ ÙÙ Ø§Ø®ØªÙØ§Ø± Ø§ÙØ³ÙØ§Ø±Ø© Ø§ÙÙÙØ§Ø³Ø¨Ø© ÙØ£Ø¬Ø¨ Ø¹ÙÙ Ø§Ø³ØªÙØ³Ø§Ø±Ø§ØªÙ."
+            "ÃÂ£ÃÂÃÂª ÃÂÃÂ³ÃÂ§ÃÂ¹ÃÂ¯ ÃÂÃÂ¨ÃÂÃÂ¹ÃÂ§ÃÂª ÃÂÃÂªÃÂ®ÃÂµÃÂµ ÃÂÃÂÃÂ¹ÃÂ±ÃÂ¶ ÃÂ§ÃÂÃÂÃÂ®ÃÂ¨ÃÂ© ÃÂÃÂÃÂ³ÃÂÃÂ§ÃÂ±ÃÂ§ÃÂª ÃÂ§ÃÂÃÂÃÂ§ÃÂ®ÃÂ±ÃÂ©. "
+            "ÃÂ±ÃÂ¯ÃÂÃÂ¯ÃÂ ÃÂ¨ÃÂ§ÃÂÃÂÃÂºÃÂ© ÃÂ§ÃÂÃÂ¹ÃÂ±ÃÂ¨ÃÂÃÂ© ÃÂÃÂÃÂ·. ÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¯ÃÂ§ÃÂ ÃÂÃÂÃÂÃÂÃÂ¯ÃÂ§ÃÂ ÃÂÃÂÃÂ­ÃÂªÃÂ±ÃÂÃÂ§ÃÂ.\n\n"
+            f"ÃÂ§ÃÂÃÂ³ÃÂÃÂ§ÃÂ±ÃÂ§ÃÂª ÃÂ§ÃÂÃÂÃÂªÃÂ§ÃÂ­ÃÂ© ÃÂ­ÃÂ§ÃÂÃÂÃÂ§ÃÂ:\n{inv_text}\n\n"
+            "ÃÂ³ÃÂ§ÃÂ¹ÃÂ¯ ÃÂ§ÃÂÃÂ¹ÃÂÃÂÃÂ ÃÂÃÂ ÃÂ§ÃÂ®ÃÂªÃÂÃÂ§ÃÂ± ÃÂ§ÃÂÃÂ³ÃÂÃÂ§ÃÂ±ÃÂ© ÃÂ§ÃÂÃÂÃÂÃÂ§ÃÂ³ÃÂ¨ÃÂ© ÃÂÃÂ£ÃÂ¬ÃÂ¨ ÃÂ¹ÃÂÃÂ ÃÂ§ÃÂ³ÃÂªÃÂÃÂ³ÃÂ§ÃÂ±ÃÂ§ÃÂªÃÂ."
         )
     else:
         system_prompt = (
@@ -449,27 +449,14 @@ def api_chat():
             "Help the customer find the right car and answer their questions."
         )
 
-    payload = json.dumps({
-        "model": "openai",
-        "messages": [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": message},
-        ],
-        "max_tokens": 500,
-        "temperature": 0.7,
-        "seed": 42,
-    }).encode()
-
     try:
-        req = urllib.request.Request(
-            CHAT_API_URL,
-            data=payload,
-            headers={"Content-Type": "application/json"},
-            method="POST",
-        )
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            body = json.loads(resp.read())
-        reply = body["choices"][0]["message"]["content"]
+        import urllib.parse as _up
+        _msg = _up.quote(message, safe='')
+        _sys = _up.quote(system_prompt, safe='')
+        _url = f"https://text.pollinations.ai/{_msg}?model=openai&seed=42&system={_sys}"
+        _req = urllib.request.Request(_url, headers={"User-Agent": "Mozilla/5.0"}, method="GET")
+        with urllib.request.urlopen(_req, timeout=30) as _resp:
+            reply = _resp.read().decode("utf-8")
         return jsonify({"reply": reply})
     except Exception as e:
         return jsonify({"reply": "Sorry, I'm having trouble connecting right now. Please try again shortly."}), 200
@@ -488,14 +475,14 @@ def seed_data():
             make="Mercedes-Benz", model="S-Class", year=2023,
             price=450000, mileage=15000, color="Obsidian Black",
             description_en="Luxury flagship sedan with AMG package. Full options, panoramic roof, massage seats, night vision.",
-            description_ar="Ø³ÙØ§Ø±Ø© ÙØ±Ø³ÙØ¯Ø³ Ø¨ÙØ² S-Class Ø§ÙÙØ§Ø®Ø±Ø© ÙØ¹ Ø¨Ø§ÙØ© AMG.",
+            description_ar="ÃÂ³ÃÂÃÂ§ÃÂ±ÃÂ© ÃÂÃÂ±ÃÂ³ÃÂÃÂ¯ÃÂ³ ÃÂ¨ÃÂÃÂ² S-Class ÃÂ§ÃÂÃÂÃÂ§ÃÂ®ÃÂ±ÃÂ© ÃÂÃÂ¹ ÃÂ¨ÃÂ§ÃÂÃÂ© AMG.",
             video_url="", is_sold=False,
         ),
         dict(
             make="BMW", model="X7", year=2022,
             price=320000, mileage=28000, color="Alpine White",
             description_en="Full-size luxury SUV. M Sport package, 7 seats, head-up display, laser headlights.",
-            description_ar="Ø³ÙØ§Ø±Ø© Ø¯ÙØ¹ Ø±Ø¨Ø§Ø¹Ù ÙØ§Ø®Ø±Ø©. Ø¨Ø§ÙØ© M SportØ 7 ÙÙØ§Ø¹Ø¯.",
+            description_ar="ÃÂ³ÃÂÃÂ§ÃÂ±ÃÂ© ÃÂ¯ÃÂÃÂ¹ ÃÂ±ÃÂ¨ÃÂ§ÃÂ¹ÃÂ ÃÂÃÂ§ÃÂ®ÃÂ±ÃÂ©. ÃÂ¨ÃÂ§ÃÂÃÂ© M SportÃÂ 7 ÃÂÃÂÃÂ§ÃÂ¹ÃÂ¯.",
             video_url="", is_sold=False,
         ),
     ]
