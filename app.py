@@ -3,6 +3,7 @@ import re
 import uuid
 import json
 import urllib.request
+import urllib.parse
 from functools import wraps
 from datetime import datetime
 
@@ -249,7 +250,7 @@ def test_drive():
     car_id = request.form.get("car_id", "").strip()
 
     if not name or not phone:
-        flash("Please fill all fields." if session.get("lang") != "ar" else "يرجى ملء جميع الحقول.", "error")
+        flash("Please fill all fields." if session.get("lang") != "ar" else "يرجى مٌء جميع الحقول.", "error")
         return redirect(request.referrer or url_for("index"))
 
     phone = re.sub(r"[^\d+\-\s]", "", phone)
@@ -392,8 +393,6 @@ def admin_photo_delete(photo_id):
 # Chat & Inventory API
 # ---------------------------------------------------------------------------
 
-CHAT_API_URL = "https://text.pollinations.ai/openai"
-
 @app.route("/api/inventory")
 def api_inventory():
     cars = Car.query.filter_by(is_sold=False).order_by(Car.created_at.desc()).all()
@@ -438,7 +437,7 @@ def api_chat():
         system_prompt = (
             "أنت مساعد مبيعات متخصص لمعرض النخبة للسيارات الفاخرة. "
             "ردودك باللغة العربية فقط. كن ودوداً ومفيداً ومحترفاً.\n\n"
-            f"السيارات المتاحة حامياً:\n{inv_text}\n\n"
+            f"السيارات المتاحة حالياً:\n{inv_text}\n\n"
             "ساعد العميل في اختيار السيارة المناسبة وأجب على استفساراته."
         )
     else:
@@ -452,27 +451,17 @@ def api_chat():
             "Help the customer find the right car. If they want to buy or inquire, direct them to WhatsApp."
         )
 
-    payload = json.dumps({
-        "model": "openai",
-        "messages": [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": message},
-        ],
-        "max_tokens": 150,
-        "temperature": 0.7,
-        "seed": 42,
-    }).encode()
-
     try:
+        encoded_msg = urllib.parse.quote(message, safe='')
+        encoded_sys = urllib.parse.quote(system_prompt, safe='')
+        url = f"https://text.pollinations.ai/{encoded_msg}?model=openai&seed=42&system={encoded_sys}"
         req = urllib.request.Request(
-            CHAT_API_URL,
-            data=payload,
-            headers={"Content-Type": "application/json"},
-            method="POST",
+            url,
+            headers={"User-Agent": "Mozilla/5.0"},
+            method="GET",
         )
         with urllib.request.urlopen(req, timeout=30) as resp:
-            body = json.loads(resp.read())
-        reply = body["choices"][0]["message"]["content"]
+            reply = resp.read().decode("utf-8").strip()
         return jsonify({"reply": reply})
     except Exception as e:
         return jsonify({"reply": "Sorry, I'm having trouble connecting right now. Please try again shortly."}), 200
@@ -498,7 +487,7 @@ def seed_data():
             make="BMW", model="X7", year=2022,
             price=320000, mileage=28000, color="Alpine White",
             description_en="Full-size luxury SUV. M Sport package, 7 seats, head-up display, laser headlights.",
-            description_ar="سيارة دفع رباعي فاخرة. باقة M Sport، 7 مقاعد.",
+            description_ar="سيارة دفع رباصي فاخرة. باقة M Sport، 7 مقاعد.",
             video_url="", is_sold=False,
         ),
     ]
@@ -510,7 +499,7 @@ def seed_data():
 
 # ---------------------------------------------------------------------------
 # Init
-# ------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 with app.app_context():
     db.create_all()
