@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{% if lang == 'ar' %}؅ضرض النخبة — سيارات فاخرة{% else %}Elite Motors — Luxury Cars{% endif %}{% endblock %}
+{% block title %}{% if lang == 'ar' %}ØØ¶Ø±Ø¶ Ø§ÙÙØ®Ø¨Ø© â Ø³ÙØ§Ø±Ø§Øª ÙØ§Ø®Ø±Ø©{% else %}371cars â Luxury Cars{% endif %}{% endblock %}
 
 {% block content %}
 
@@ -8,15 +8,15 @@
 <section class="hero">
   <div class="hero-bg"></div>
   <div class="hero-content">
-    <h1>{% if lang == 'ar' %}اكتشف سيارة أحلامك{% else %}Find Your Dream Car{% endif %}</h1>
-    <p>{% if lang == 'ar' %}مجموعة حصرية من أفخم السيارات في الولايات المتحدة{% else %}Exclusive collection of the finest luxury vehicles in the USA{% endif %}</p>
+    <h1>{% if lang == 'ar' %}Ø§ÙØªØ´Ù Ø³ÙØ§Ø±Ø© Ø£Ø­ÙØ§ÙÙ{% else %}Find Your Dream Car{% endif %}</h1>
+    <p>{% if lang == 'ar' %}ÙØ¬ÙÙØ¹Ø© Ø­ØµØ±ÙØ© ÙÙ Ø£ÙØ®Ù Ø§ÙØ³ÙØ§Ø±Ø§Øª ÙÙ Ø§ÙÙÙØ§ÙØ§Øª Ø§ÙÙØªØ­Ø¯Ø©{% else %}Buy & sell any car across the USA — we connect buyers with dealerships and private sellers{% endif %}</p>
 
     <!-- SEARCH BAR -->
     <form class="search-bar" method="GET" action="{{ url_for('index') }}">
       <input type="text" name="search" value="{{ args.get('search', '') }}"
-             placeholder="{% if lang == 'ar' %}ابحث عن سيارة...{% else %}Search cars...{% endif %}" />
+             placeholder="{% if lang == 'ar' %}Ø§Ø¨Ø­Ø« Ø¹Ù Ø³ÙØ§Ø±Ø©...{% else %}Search cars...{% endif %}" />
       <button type="submit" class="btn btn-gold">
-        {% if lang == 'ar' %}بحث{% else %}Search{% endif %}
+        {% if lang == 'ar' %}Ø¨Ø­Ø«{% else %}Search{% endif %}
       </button>
     </form>
   </div>
@@ -30,9 +30,9 @@
     {% endif %}
 
     <div class="filter-group">
-      <label>{% if lang == 'ar' %}الماركة{% else %}Brand{% endif %}</label>
+      <label>{% if lang == 'ar' %}Ø§ÙÙØ§Ø±ÙØ©{% else %}Brand{% endif %}</label>
       <select name="brand">
-        <option value="">{% if lang == 'ar' %}الكل{% else %}All{% endif %}</option>
+        <option value="">{% if lang == 'ar' %}Ø§ÙÙÙ{% else %}All{% endif %}</option>
         {% for b in brands %}
           <option value="{{ b }}" {% if args.get('brand') == b %}selected{% endif %}>{{ b }}</option>
         {% endfor %}
@@ -40,9 +40,9 @@
     </div>
 
     <div class="filter-group">
-      <label>{% if lang == 'ar' %}اللون{% else %}Color{% endif %}</label>
+      <label>{% if lang == 'ar' %}Ø§ÙÙÙÙ{% else %}Color{% endif %}</label>
       <select name="color">
-        <option value="">{% if lang == 'ar' %}الكل{% else %}All{% endif %}</option>
+        <option value="">{% if lang == 'ar' %}Ø§ÙÙÙ{% else %}All{% endif %}</option>
         {% for c in colors %}
           <option value="{{ c }}" {% if args.get('color') == c %}selected{% endif %}>{{ c }}</option>
         {% endfor %}
@@ -50,26 +50,26 @@
     </div>
 
     <div class="filter-group filter-range">
-      <label>{% if lang == 'ar' %}السعر ($){% else %}Price (USD){% endif %}</label>
+      <label>{% if lang == 'ar' %}Ø§ÙØ³Ø¹Ø± ($){% else %}Price (USD){% endif %}</label>
       <div class="range-row">
-        <input type="number" name="min_price" placeholder="{% if lang == 'ar' %}من{% else %}Min{% endif %}" value="{{ args.get('min_price', '') }}" min="0" />
-        <span>—</span>
-        <input type="number" name="max_price" placeholder="{% if lang == 'ar' %}إلى{% else %}Max{% endif %}" value="{{ args.get('max_price', '') }}" min="0" />
+        <input type="number" name="min_price" placeholder="{% if lang == 'ar' %}ÙÙ{% else %}Min{% endif %}" value="{{ args.get('min_price', '') }}" min="0" />
+        <span>â</span>
+        <input type="number" name="max_price" placeholder="{% if lang == 'ar' %}Ø¥ÙÙ{% else %}Max{% endif %}" value="{{ args.get('max_price', '') }}" min="0" />
       </div>
     </div>
 
     <div class="filter-group filter-range">
-      <label>{% if lang == 'ar' %}السنة{% else %}Year{% endif %}</label>
+      <label>{% if lang == 'ar' %}Ø§ÙØ³ÙØ©{% else %}Year{% endif %}</label>
       <div class="range-row">
-        <input type="number" name="min_year" placeholder="{% if lang == 'ar' %}من{% else %}From{% endif %}" value="{{ args.get('min_year', '') }}" min="1990" max="2030" />
-        <span>—</span>
-        <input type="number" name="max_year" placeholder="{% if lang == 'ar' %}إلى{% else %}To{% endif %}" value="{{ args.get('max_year', '') }}" min="1990" max="2030" />
+        <input type="number" name="min_year" placeholder="{% if lang == 'ar' %}ÙÙ{% else %}From{% endif %}" value="{{ args.get('min_year', '') }}" min="1990" max="2030" />
+        <span>â</span>
+        <input type="number" name="max_year" placeholder="{% if lang == 'ar' %}Ø¥ÙÙ{% else %}To{% endif %}" value="{{ args.get('max_year', '') }}" min="1990" max="2030" />
       </div>
     </div>
 
     <div class="filter-actions">
-      <button type="submit" class="btn btn-gold">{% if lang == 'ar' %}تصفية{% else %}Filter{% endif %}</button>
-      <a href="{{ url_for('index') }}" class="btn btn-ghost">{% if lang == 'ar' %}إعادة تعيين{% else %}Reset{% endif %}</a>
+      <button type="submit" class="btn btn-gold">{% if lang == 'ar' %}ØªØµÙÙØ©{% else %}Filter{% endif %}</button>
+      <a href="{{ url_for('index') }}" class="btn btn-ghost">{% if lang == 'ar' %}Ø¥Ø¹Ø§Ø¯Ø© ØªØ¹ÙÙÙ{% else %}Reset{% endif %}</a>
     </div>
   </form>
 </section>
@@ -78,7 +78,7 @@
 <div class="results-header">
   <span class="results-count">
     {% if lang == 'ar' %}
-      {{ pagination.total }} سيارة متاحة
+      {{ pagination.total }} Ø³ÙØ§Ø±Ø© ÙØªØ§Ø­Ø©
     {% else %}
       {{ pagination.total }} car{% if pagination.total != 1 %}s{% endif %} available
     {% endif %}
@@ -95,11 +95,11 @@
         <img src="{{ photo_url(car.primary_photo) }}" alt="{{ car.display_name }}" loading="lazy" />
       {% else %}
         <div class="no-photo">
-          <span>{% if lang == 'ar' %}لا توجد صورة{% else %}No Photo{% endif %}</span>
+          <span>{% if lang == 'ar' %}ÙØ§ ØªÙØ¬Ø¯ ØµÙØ±Ø©{% else %}No Photo{% endif %}</span>
         </div>
       {% endif %}
       {% if car.is_sold %}
-        <div class="sold-badge">{% if lang == 'ar' %}مباع{% else %}SOLD{% endif %}</div>
+        <div class="sold-badge">{% if lang == 'ar' %}ÙØ¨Ø§Ø¹{% else %}SOLD{% endif %}</div>
       {% endif %}
     </div>
     <div class="car-card-body">
@@ -118,9 +118,9 @@
 </section>
 {% else %}
 <div class="empty-state">
-  <div class="empty-icon">🚗</div>
-  <h2>{% if lang == 'ar' %}لً' توجد سيارا֪ متاحة{% else %}No Cars Found{% endif %}</h2>
-  <p>{% if lang == 'ar' %}سرأ تييىر مٽاييير البحث{% else %}Try adjusting your search filters{% endif %}</p>
+  <div class="empty-icon">ð</div>
+  <h2>{% if lang == 'ar' %}ÙÙ' ØªÙØ¬Ø¯ Ø³ÙØ§Ø±Ø§Öª ÙØªØ§Ø­Ø©{% else %}No Cars Found{% endif %}</h2>
+  <p>{% if lang == 'ar' %}Ø³Ø±Ø£ ØªÙÙÙØ± ÙÙ½Ø§ÙÙÙØ± Ø§ÙØ¨Ø­Ø«{% else %}Try adjusting your search filters{% endif %}</p>
 </div>
 {% endif %}
 
@@ -128,19 +128,19 @@
 {% if pagination.pages > 1 %}
 <nav class="pagination">
   {% if pagination.has_prev %}
-    <a href="{{ url_for('index', page=pagination.prev_num, **args) }}" class="page-btn">{% if lang == 'ar' %}‹ السابق{% else %}‹ Prev{% endif %}</a>
+    <a href="{{ url_for('index', page=pagination.prev_num, **args) }}" class="page-btn">{% if lang == 'ar' %}â¹ Ø§ÙØ³Ø§Ø¨Ù{% else %}â¹ Prev{% endif %}</a>
   {% endif %}
 
   {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
     {% if p %}
       <a href="{{ url_for('index', page=p, **args) }}" class="page-btn {% if p == pagination.page %}active{% endif %}">{{ p }}</a>
     {% else %}
-      <span class="page-ellipsis">…</span>
+      <span class="page-ellipsis">â¦</span>
     {% endif %}
   {% endfor %}
 
   {% if pagination.has_next %}
-    <a href="{{ url_for('index', page=pagination.next_num, **args) }}" class="page-btn">{% if lang == 'ar' %}التالي ›{% else %}Next ›{% endif %}</a>
+    <a href="{{ url_for('index', page=pagination.next_num, **args) }}" class="page-btn">{% if lang == 'ar' %}Ø§ÙØªØ§ÙÙ âº{% else %}Next âº{% endif %}</a>
   {% endif %}
 </nav>
 {% endif %}
