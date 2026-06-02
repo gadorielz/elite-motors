@@ -431,22 +431,24 @@ def api_chat():
             for c in inventory
         )
     else:
-        inv_text = "No cars currently available" if lang == "en" else "لا توجد سيارات متاحة حالياً"
+        inv_text = "No cars currently available" if lang == "en" else "لا توجد سيارات متاحة رالياً"
 
     if lang == "ar":
         system_prompt = (
-            "أنت مساعد 371cars. نحن وسيط نربط المشترين بوكلاء السيارات في أمريكا فقط."
-            " لا نقدم فحوصات ولا تمويل ولا شحن - فقط نساعد في إيجاد السيارة المناسبة من الوكلاء."
-            " موقعنا أورلاندو فلوريدا ونعمل مع وكلاء في جميع أنحاء أمريكا."
+            "أنت مساعد 371cars. نحن وسيط نربط المشترين بوكلاء السيارات والبائعين الأفراد في أمريكا."
+            " إذا أراد شخص بيع سيارته، ننشر إعلانه على وسائل التواصل الاجتماعي والموقع."
+            " لا نقدم فحوصات ولا تمويل ولا شحن - فقط نساعد في البيع والشراء."
+            " موقعنا أورلاندو فلوريدا ونعمل مع وكلاء وأفراد في جميع أنراء أمريكا."
             " رد باللغة العربية، جملتان أو ثلاث كحد أقصى، لا تستخدم نقاط."
-            " واتساب: 3863012863، ساعات العمل: 9 ص - 5 م."
+            " واتساب: 3863012863، ساعا֪ العمل: 9 ص - 5 م."
             f" السيارات المتاحة: {inv_text}"
         )
     else:
         system_prompt = (
             "You are a sales assistant for 371cars, based in Orlando Florida USA."
-            " 371cars is a middleman — we simply connect buyers with car dealerships across the US."
-            " We do NOT offer inspections, financing, shipping, or paperwork. We just help find the right car."
+            " 371cars is a middleman — we connect buyers with dealerships AND private sellers across the US."
+            " If someone wants to sell their car, we list it on our social media and website."
+            " We do NOT offer inspections, financing, shipping, or paperwork. We just help buy and sell cars."
             " Keep replies under 3 sentences. No bullet points. Be friendly and direct."
             " Contact: WhatsApp (386)301-2863, hours 9AM-5PM, @371cars on TikTok/Instagram/Facebook."
             f" Available cars: {inv_text}"
