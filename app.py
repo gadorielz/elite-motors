@@ -284,7 +284,7 @@ def admin_login():
 @app.route("/admin/logout")
 def admin_logout():
     session.pop("admin_logged_in", None)
-    return redirect(url_for+"admin_login"))
+    return redirect(url_for("admin_login"))
 
 
 @app.route("/admin")
@@ -374,7 +374,7 @@ def admin_toggle_sold(car_id):
     car = Car.query.get_or_404(car_id)
     car.is_sold = not car.is_sold
     db.session.commit()
-    return redirect(url_for+"admin_dashboard"))
+    return redirect(url_for("admin_dashboard"))
 
 
 @app.route("/admin/photo/<int:photo_id>/delete", methods=["POST"])
@@ -436,7 +436,7 @@ def api_chat():
     if lang == "ar":
         system_prompt = (
             "أنت مساعد 371cars. نحن وسيط نربط المشترين بوكلاء السيارات في أمريكا فقط."
-            " لا نقدم فحوصات ولا تمويل ولا شحن - فقط نساعد في ٥يجاد السيارة المناسبة من الوكلاء."
+            " لا نقدم فحوصات ولا تمويل ولا شحن - فقط نساعد في إيجاد السيارة المناسبة من الوكلاء."
             " موقعنا أورلاندو فلوريدا ونعمل مع وكلاء في جميع أنحاء أمريكا."
             " رد باللغة العربية، جملتان أو ثلاث كحد أقصى، لا تستخدم نقاط."
             " واتساب: 3863012863، ساعات العمل: 9 ص - 5 م."
