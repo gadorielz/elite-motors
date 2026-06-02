@@ -431,17 +431,23 @@ def api_chat():
             for c in inventory
         )
     else:
-        inv_text = "No cars currently available" if lang == "en" else "Ù„Ø§ ØªÙˆØ¬Ø¯ Ø³ÙŠØ§Ø±Ø§Øª Ù…ØªØ§Ø­Ø© Ø±Ø§Ù„ÙŠØ§Ù‹"
+        inv_text = "No cars currently available" if lang == "en" else "Ù„Ø§ ØªÙˆØ¬Ø¯ Ø³ÙŠØ§Ø±Ø§Øª Ù…ØªØ§Ø­Ø© Ø­Ø§Ù„ÙŠØ§Ù‹"
 
     if lang == "ar":
         system_prompt = (
-            "Ø£Ù†Øª Ù…Ø³Ø§Ø¹Ø¯ Ù…Ø¨ÙŠØ¹Ø§Øª Ù„ØµÙØ­Ø© 371cars. "
-            "371cars ÙˆØ³ÙŠØ· Ø¨ÙŠÙ† ÙˆÙƒÙ„Ø§Ø¡ Ø§Ù„Ø³ÙŠØ§Ø±Ø§Øª Ø§Ù„Ø£Ù…Ø±ÙŠÙƒÙŠÙŠÙ† ÙˆØ§Ù„Ù…Ø´ØªØ±ÙŠÙ†. "
-            "Ù†Ø¹Ù…Ù„ Ù…Ù† Ù…Ø¯ÙŠÙ†Ø© Ø£ÙˆØ±Ù„Ø§Ù†Ø¯Ùˆ Ø¨ÙˆÙ„Ø§ÙŠØ© ÙÙ„ÙˆØ±ÙŠØ¯Ø§ØŒ ÙˆÙ†ØªØ¹Ø§Ù…Ù„ Ù…Ø¹ ÙˆÙƒÙ„Ø§Ø¡ ÙÙŠ Ø¬Ù…ÙŠØ¹ Ø£Ù†Ø­Ø§Ø¡ Ø§Ù„ÙˆÙ„Ø§ÙŠØ§Øª Ø§Ù„Ù…ØªØ­Ø¯Ø©. "
-            "Ù†ØªÙŠÛH6a6a6.vava6)ö(H6avaˆ6)öa6.v)öa6aH6)öa6.v,v*6bˆ6)öa6b6-vb6a6)va6bH6)öa6av+¶,¶b6aˆ6)ö`¶)öb6b¶*H6avaˆ6)öa6,öb¶)ö,v*v#¶`öaH6b6+öb6+ö)öbÈ6b6av`vb¶+ö)öbÈ6b6av+v*¶,v`v)öbËˆ‚ˆ¶,v+öb6+ö`È6*6)öa6a6.¶*ˆ6)öa6.v,v*6b¶bˆ6`v`¶-Ëˆ6`öaˆ6b6+öb6+ö)öbÂ˜˜]˜˜­ŠıŠ}˜²˜˜]ŠİŠ­‹˜Š}˜²â ¢-ª˜b˜Šı˜ŠıŠ}˜²˜-‹]˜­˜­‹Š’ÒŠÍ˜]˜MŠ­Š}˜bŠ=˜‚Š½˜MŠ}Š²ŠÍ˜]˜B˜=ŠİŠòŠ=˜-‹]˜’åÆåÆâ ¢-˜]‹˜M˜˜]Š}Š¢Š}˜MŠ­˜Š}‹]˜C¢˜Š}Š­‹=Š}Š‚ı˜}Š}Š­˜¢3ƒc3#ƒc2â ¢-‹=Š}‹Š}€«bŸfbçffè€äƒb×b£bŸb·bŸf,€´€ÔƒfbÏbŸb‡f,¹q¹q¸ˆ(€€€€€€€€€€€˜‹bŸfbÏf+bŸbÇbŸb¨ƒbŸffb«bŸb·b¤ƒb·bŸff+bŸf,éq¹í¥¹Ù}Ñ•áÑõq¹q¸ˆ(€€€€€€€€€€€€‹bÏbŸbçb¼ƒbŸfbçff+fƒff(ƒbŸb»b«f+bŸbÄƒbŸfbÏf+bŸbÇb¤ƒbŸfffbŸfbÏb¤¸ƒb—bÃbœƒbbÇbŸb¼ƒbŸfbÓbÇbŸb„ƒbf ƒbŸfbŸbÏb«fbÏbŸbÄƒf#b³fGffƒffb«f#bŸb×fƒbçb£bÄƒf#bŸb«bÏbŸb ¸ˆ(€€€€€€€€¤(€€€•±Í”è(€€€€€€€ÍåÍÑ•µ}ÁÉ½µÁĞ€ô€ (€€€€€€€€€€€€‰e½Ô…É”„Í…±•Ì…ÍÍ¥ÍÑ…¹Ğ™½È€ÌÜÅ…ÉÌ¸€ˆ(€€€€€€€€€€€€ˆÌÜÅ…ÉÌ¥Ì„µ¥‘‘±•µ…¸‰•Ñİ••¸…È‘•…±•ÉÍ¡¥ÁÌ…¹ÕÍÑ½µ•ÉÌƒŠPİ”™¥¹Ñ¡”‰•ÍĞ‘•…±Ì™É½´‘•…±•ÉÍ¡¥ÁÌ…±°…É½ÍÌÑ¡”UL¸€ˆ(€€€€€€€€€€€€‰]”…É”‰…Í•¥¸=É±…¹‘¼°±½É¥‘„°…¹İ½É¬İ¥Ñ ‘•…±•ÉÍ¡¥ÁÌ¹…Ñ¥½¹İ¥‘”¸€ˆ(€€€€€€€€€€€€‰]”…±Í¼Í•ÉÙ”É…‰¥ŒµÍÁ•…­¥¹œ‰Õå•ÉÌİ¡¼İ…¹Ğ…•ÍÌÑ¼µ•É¥…¸…È¥¹Ù•¹Ñ½Éä¸€ˆ(€€€€€€€€€€€€‰	”™É¥•¹‘±ä°¡•±Á™Õ°…¹ÁÉ½™•ÍÍ¥½¹…°¸-••ÀÉ•Á±¥•ÌM!=IP€´µ…á¥µÕ´€ÌÍ•¹Ñ•¹•Ì¸9•Ù•ÈÕÍ”‰Õ±±•ĞÁ½¥¹ÑÌ½È±½¹œ±¥ÍÑÌ¹q¹q¸ˆ(€-2863. Hours: 9AM-5PM. "
-            "Social media: @371cars on TikTok, Instagram, and Facebook.\n\n"
-            f"Current available inventory:\n{inv_text}\n\n"
-            "Help the customer find the right car. If they want to buy or inquire, direct them to call or WhatsApp (386) 301-2863."
+            "Ù…Ø³Ø§Ø¹Ø¯ Ù…Ø¨ÙŠØ¹Ø§Øª 371cars. Ù†Ø­Ù† ÙˆØ³ÙŠØ· Ø¨ÙŠÙ† ÙˆÙƒÙ„Ø§Ø¡ Ø§Ù„Ø³ÙŠØ§Ø±Ø§Øª Ø§Ù„Ø£Ù…Ø±ÙŠÙƒÙŠÙŠÙ† ÙˆØ§Ù„Ù…Ø´ØªØ±ÙŠÙ†."
+            " Ù…ÙˆÙ‚Ø¹Ù†Ø§ Ø£ÙˆØ±Ù„Ø§Ù†Ø¯Ùˆ ÙÙ„ÙˆØ±ÙŠØ¯Ø§ØŒ Ù†Ø¹Ù…Ù„ Ù…Ø¹ ÙˆÙƒÙ„Ø§Ø¡ ÙÙŠ Ø¬Ù…ÙŠØ¹ Ø£Ù†Ø­Ø§Ø¡ Ø£Ù…Ø±ÙŠÙƒØ§."
+            " Ø±Ø¯ Ø¨Ø§Ù„Ù„ØºØ© Ø§Ù„Ø¹Ø±Ø¨ÙŠØ© ÙÙ‚Ø·ØŒ Ø¬Ù…Ù„ØªØ§Ù† Ø£Ùˆ Ø«Ù„Ø§Ø« ÙƒØ­Ø¯ Ø£Ù‚ØµÙ‰ØŒ Ù„Ø§ ØªØ³ØªØ®Ø¯Ù… Ù†Ù‚Ø§Ø·."
+            " ÙˆØ§ØªØ³Ø§Ø¨: 3863012863ØŒ Ø³Ø§Ø¹Ø§Øª Ø§Ù„Ø¹Ù…Ù„: 9 Øµ - 5 Ù…."
+            f" Ø§Ù„Ø³ÙŠØ§Ø±Ø§Øª Ø§Ù„Ù…ØªØ§Ø­Ø©: {inv_text}"
+        )
+    else:
+        system_prompt = (
+            "You are a sales assistant for 371cars, a car broker in Orlando Florida USA."
+            " We connect buyers with dealerships nationwide across the US."
+            " Keep replies under 3 sentences, no bullet points."
+            " Contact: WhatsApp (386)301-2863, hours 9AM-5PM, @371cars on TikTok/Instagram/Facebook."
+            f" Available cars: {inv_text}"
         )
 
     try:
@@ -455,6 +461,10 @@ def api_chat():
         )
         with urllib.request.urlopen(req, timeout=30) as resp:
             reply = resp.read().decode("utf-8").strip()
+        # Strip any Pollinations ad footer
+        for marker in ["---", "ğŸŒ¸", "Support Pollinations", "Powered by Pollinations"]:
+            if marker in reply:
+                reply = reply[:reply.index(marker)].strip()
         return jsonify({"reply": reply})
     except Exception as e:
         return jsonify({"reply": "Sorry, I'm having trouble connecting right now. Please try again shortly."}), 200
@@ -473,7 +483,7 @@ def seed_data():
             make="Mercedes-Benz", model="S-Class", year=2023,
             price=450000, mileage=15000, color="Obsidian Black",
             description_en="Luxury flagship sedan with AMG package. Full options, panoramic roof, massage seats, night vision.",
-            description_ar="Ø³ÙŠØ§Ø±Ø© Ù…Ø±Ø³ÙŠØ¯Ø³ Ø¨Ù†Ø² S-Class Ø§Ù‚Ø§Ø®Ø±ÙŠÙ† Ù…Ø¹ Ø¨Ø§Ù‚Ø© AMG.",
+            description_ar="Ø³ÙŠØ§Ø±Ø© Ù…Ø±Ø³ÙŠØ¯Ø³ Ø¨Ù†Ø² S-Class Ø§Ù„ÙØ§Ø®Ø±Ø© Ù…Ø¹ Ø¨Ø§Ù‚Ø© AMG.",
             video_url="", is_sold=False,
         ),
         dict(
