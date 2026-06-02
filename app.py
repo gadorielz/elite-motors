@@ -250,7 +250,7 @@ def test_drive():
     car_id = request.form.get("car_id", "").strip()
 
     if not name or not phone:
-        flash("Please fill all fields." if session.get("lang") != "ar" else "ÙŠØ±Ø¬Ù‰ Ù…ÙŒØ¡ Ø¬Ù…ÙŠØ¹ Ø§Ù„Ø­Ù‚ÙˆÙ„.", "error")
+        flash("Please fill all fields." if session.get("lang") != "ar" else "ÙŠØ±Ø¬Ù‰ Ù…Ù„Ø¡ Ø¬Ù…ÙŠØ¹ Ø§Ù„Ø­Ù‚ÙˆÙ„.", "error")
         return redirect(request.referrer or url_for("index"))
 
     phone = re.sub(r"[^\d+\-\s]", "", phone)
@@ -427,28 +427,21 @@ def api_chat():
     if inventory:
         inv_text = "\n".join(
             f"- {c.get('year')} {c.get('make')} {c.get('model')}, {c.get('color')}, "
-            f"{int(c.get('mileage',0)):,} km, SAR {int(c.get('price',0)):,}"
+            f"{int(c.get('mileage',0)):,} miles, ${int(c.get('price',0)):,}"
             for c in inventory
         )
     else:
-        inv_text = "No cars currently available" if lang == "en" else "Ù„Ø§ ØªÙˆØ¬Ø¯ Ø³ÙŠØ§Ø±Ø§Øª Ù…ØªØ§Ø­Ø© Ø­Ø§Ù„ÙŠØ§Ù‹"
+        inv_text = "No cars currently available" if lang == "en" else "Ù„Ø§ ØªÙˆØ¬Ø¯ Ø³ÙŠØ§Ø±Ø§Øª Ù…ØªØ§Ø­Ø© Ø±Ø§Ù„ÙŠØ§Ù‹"
 
     if lang == "ar":
         system_prompt = (
-            "Ø£Ù†Øª Ù…Ø³Ø§Ø¹Ø¯ Ù…Ø¨ÙŠØ¹Ø§Øª Ù…ØªØ®ØµØµ Ù„Ù…Ø¹Ø±Ø¶ Ø§Ù„Ù†Ø®Ø¨Ø© Ù„Ù„Ø³ÙŠØ§Ø±Ø§Øª Ø§Ù„ÙØ§Ø®Ø±Ø©. "
-            "Ø±Ø¯ÙˆØ¯Ùƒ Ø¨Ø§Ù„Ù„ØºØ© Ø§Ù„Ø¹Ø±Ø¨ÙŠØ© ÙÙ‚Ø·. ÙƒÙ† ÙˆØ¯ÙˆØ¯Ø§Ù‹ ÙˆÙ…ÙÙŠØ¯Ø§Ù‹ ÙˆÙ…Ø­ØªØ±ÙØ§Ù‹.\n\n"
-            f"Ø§Ù„Ø³ÙŠØ§Ø±Ø§Øª Ø§Ù„Ù…ØªØ§Ø­Ø© Ø­Ø§Ù„ÙŠØ§Ù‹:\n{inv_text}\n\n"
-            "Ø³Ø§Ø¹Ø¯ Ø§Ù„Ø¹Ù…ÙŠÙ„ ÙÙŠ Ø§Ø®ØªÙŠØ§Ø± Ø§Ù„Ø³ÙŠØ§Ø±Ø© Ø§Ù„Ù…Ù†Ø§Ø³Ø¨Ø© ÙˆØ£Ø¬Ø¨ Ø¹Ù„Ù‰ Ø§Ø³ØªÙØ³Ø§Ø±Ø§ØªÙ‡."
-        )
-    else:
-        system_prompt = (
-            "You are a sales assistant for Elite Motors luxury car dealership in Saudi Arabia. "
-            "Be friendly, helpful and professional. Always respond in English. "
-            "Keep replies SHORT - maximum 3 sentences. Never use bullet points or long lists.\n\n"
-            "About us: Elite Motors specializes in luxury and premium cars. "
-            "WhatsApp: +966500000000. Location: Saudi Arabia.\n\n"
+            "Ø£Ù†Øª Ù…Ø³Ø§Ø¹Ø¯ Ù…Ø¨ÙŠØ¹Ø§Øª Ù„ØµÙØ­Ø© 371cars. "
+            "371cars ÙˆØ³ÙŠØ· Ø¨ÙŠÙ† ÙˆÙƒÙ„Ø§Ø¡ Ø§Ù„Ø³ÙŠØ§Ø±Ø§Øª Ø§Ù„Ø£Ù…Ø±ÙŠÙƒÙŠÙŠÙ† ÙˆØ§Ù„Ù…Ø´ØªØ±ÙŠÙ†. "
+            "Ù†Ø¹Ù…Ù„ Ù…Ù† Ù…Ø¯ÙŠÙ†Ø© Ø£ÙˆØ±Ù„Ø§Ù†Ø¯Ùˆ Ø¨ÙˆÙ„Ø§ÙŠØ© ÙÙ„ÙˆØ±ÙŠØ¯Ø§ØŒ ÙˆÙ†ØªØ¹Ø§Ù…Ù„ Ù…Ø¹ ÙˆÙƒÙ„Ø§Ø¡ ÙÙŠ Ø¬Ù…ÙŠØ¹ Ø£Ù†Ø­Ø§Ø¡ Ø§Ù„ÙˆÙ„Ø§ÙŠØ§Øª Ø§Ù„Ù…ØªØ­Ø¯Ø©. "
+            "Ù†ØªÙŠÛH6a6a6.vava6)ö(H6avaˆ6)öa6.v)öa6aH6)öa6.v,v*6bˆ6)öa6b6-vb6a6)va6bH6)öa6av+¶,¶b6aˆ6)ö`¶)öb6b¶*H6avaˆ6)öa6,öb¶)ö,v*v#¶`öaH6b6+öb6+ö)öbÈ6b6av`vb¶+ö)öbÈ6b6av+v*¶,v`v)öbËˆ‚ˆ¶,v+öb6+ö`È6*6)öa6a6.¶*ˆ6)öa6.v,v*6b¶bˆ6`v`¶-Ëˆ6`öaˆ6b6+öb6+ö)öbÂ˜˜]˜˜­ŠıŠ}˜²˜˜]ŠİŠ­‹˜Š}˜²â ¢-ª˜b˜Šı˜ŠıŠ}˜²˜-‹]˜­˜­‹Š’ÒŠÍ˜]˜MŠ­Š}˜bŠ=˜‚Š½˜MŠ}Š²ŠÍ˜]˜B˜=ŠİŠòŠ=˜-‹]˜’åÆåÆâ ¢-˜]‹˜M˜˜]Š}Š¢Š}˜MŠ­˜Š}‹]˜C¢˜Š}Š­‹=Š}Š‚ı˜}Š}Š­˜¢3ƒc3#ƒc2â ¢-‹=Š}‹Š}€«bŸfbçffè€äƒb×b£bŸb·bŸf,€´€ÔƒfbÏbŸb‡f,¹q¹q¸ˆ(€€€€€€€€€€€˜‹bŸfbÏf+bŸbÇbŸb¨ƒbŸffb«bŸb·b¤ƒb·bŸff+bŸf,éq¹í¥¹Ù}Ñ•áÑõq¹q¸ˆ(€€€€€€€€€€€€‹bÏbŸbçb¼ƒbŸfbçff+fƒff(ƒbŸb»b«f+bŸbÄƒbŸfbÏf+bŸbÇb¤ƒbŸfffbŸfbÏb¤¸ƒb—bÃbœƒbbÇbŸb¼ƒbŸfbÓbÇbŸb„ƒbf ƒbŸfbŸbÏb«fbÏbŸbÄƒf#b³fGffƒffb«f#bŸb×fƒbçb£bÄƒf#bŸb«bÏbŸb ¸ˆ(€€€€€€€€¤(€€€•±Í”è(€€€€€€€ÍåÍÑ•µ}ÁÉ½µÁĞ€ô€ (€€€€€€€€€€€€‰e½Ô…É”„Í…±•Ì…ÍÍ¥ÍÑ…¹Ğ™½È€ÌÜÅ…ÉÌ¸€ˆ(€€€€€€€€€€€€ˆÌÜÅ…ÉÌ¥Ì„µ¥‘‘±•µ…¸‰•Ñİ••¸…È‘•…±•ÉÍ¡¥ÁÌ…¹ÕÍÑ½µ•ÉÌƒŠPİ”™¥¹Ñ¡”‰•ÍĞ‘•…±Ì™É½´‘•…±•ÉÍ¡¥ÁÌ…±°…É½ÍÌÑ¡”UL¸€ˆ(€€€€€€€€€€€€‰]”…É”‰…Í•¥¸=É±…¹‘¼°±½É¥‘„°…¹İ½É¬İ¥Ñ ‘•…±•ÉÍ¡¥ÁÌ¹…Ñ¥½¹İ¥‘”¸€ˆ(€€€€€€€€€€€€‰]”…±Í¼Í•ÉÙ”É…‰¥ŒµÍÁ•…­¥¹œ‰Õå•ÉÌİ¡¼İ…¹Ğ…•ÍÌÑ¼µ•É¥…¸…È¥¹Ù•¹Ñ½Éä¸€ˆ(€€€€€€€€€€€€‰	”™É¥•¹‘±ä°¡•±Á™Õ°…¹ÁÉ½™•ÍÍ¥½¹…°¸-••ÀÉ•Á±¥•ÌM!=IP€´µ…á¥µÕ´€ÌÍ•¹Ñ•¹•Ì¸9•Ù•ÈÕÍ”‰Õ±±•ĞÁ½¥¹ÑÌ½È±½¹œ±¥ÍÑÌ¹q¹q¸ˆ(€-2863. Hours: 9AM-5PM. "
+            "Social media: @371cars on TikTok, Instagram, and Facebook.\n\n"
             f"Current available inventory:\n{inv_text}\n\n"
-            "Help the customer find the right car. If they want to buy or inquire, direct them to WhatsApp."
+            "Help the customer find the right car. If they want to buy or inquire, direct them to call or WhatsApp (386) 301-2863."
         )
 
     try:
@@ -480,14 +473,14 @@ def seed_data():
             make="Mercedes-Benz", model="S-Class", year=2023,
             price=450000, mileage=15000, color="Obsidian Black",
             description_en="Luxury flagship sedan with AMG package. Full options, panoramic roof, massage seats, night vision.",
-            description_ar="Ø³ÙŠØ§Ø±Ø© Ù…Ø±Ø³ÙŠØ¯Ø³ Ø¨Ù†Ø² S-Class Ø§Ù„ÙØ§Ø®Ø±Ø© Ù…Ø¹ Ø¨Ø§Ù‚Ø© AMG.",
+            description_ar="Ø³ÙŠØ§Ø±Ø© Ù…Ø±Ø³ÙŠØ¯Ø³ Ø¨Ù†Ø² S-Class Ø§Ù‚Ø§Ø®Ø±ÙŠÙ† Ù…Ø¹ Ø¨Ø§Ù‚Ø© AMG.",
             video_url="", is_sold=False,
         ),
         dict(
             make="BMW", model="X7", year=2022,
             price=320000, mileage=28000, color="Alpine White",
             description_en="Full-size luxury SUV. M Sport package, 7 seats, head-up display, laser headlights.",
-            description_ar="Ø³ÙŠØ§Ø±Ø© Ø¯ÙØ¹ Ø±Ø¨Ø§ØµÙŠ ÙØ§Ø®Ø±Ø©. Ø¨Ø§Ù‚Ø© M SportØŒ 7 Ù…Ù‚Ø§Ø¹Ø¯.",
+            description_ar="Ø³ÙŠØ§Ø±Ø© Ø¯ÙØ¹ Ø±Ø¨Ø§Ø¹ÙŠ ÙØ§Ø®Ø±Ø©. Ø¨Ø§Ù‚Ø© M SportØŒ 7 Ù…Ù‚Ø§Ø¹Ø¯.",
             video_url="", is_sold=False,
         ),
     ]
