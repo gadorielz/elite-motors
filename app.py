@@ -284,7 +284,7 @@ def admin_login():
 @app.route("/admin/logout")
 def admin_logout():
     session.pop("admin_logged_in", None)
-    return redirect(url_for("admin_login"))
+    return redirect(url_for+"admin_login"))
 
 
 @app.route("/admin")
@@ -374,7 +374,7 @@ def admin_toggle_sold(car_id):
     car = Car.query.get_or_404(car_id)
     car.is_sold = not car.is_sold
     db.session.commit()
-    return redirect(url_for("admin_dashboard"))
+    return redirect(url_for+"admin_dashboard"))
 
 
 @app.route("/admin/photo/<int:photo_id>/delete", methods=["POST"])
@@ -435,17 +435,19 @@ def api_chat():
 
     if lang == "ar":
         system_prompt = (
-            "مساعد مبيعات 371cars. نحن وسيط بين وكلاء السيارات الأمريكيين والمشترين."
-            " موقعنا أورلاندو فلوريدا، نعمل مع وكلاء في جميع أنحاء أمريكا."
-            " رد باللغة العربية فقط، جملتان أو ثلاث كحد أقصى، لا تستخدم نقاط."
+            "أنت مساعد 371cars. نحن وسيط نربط المشترين بوكلاء السيارات في أمريكا فقط."
+            " لا نقدم فحوصات ولا تمويل ولا شحن - فقط نساعد في ٥يجاد السيارة المناسبة من الوكلاء."
+            " موقعنا أورلاندو فلوريدا ونعمل مع وكلاء في جميع أنحاء أمريكا."
+            " رد باللغة العربية، جملتان أو ثلاث كحد أقصى، لا تستخدم نقاط."
             " واتساب: 3863012863، ساعات العمل: 9 ص - 5 م."
             f" السيارات المتاحة: {inv_text}"
         )
     else:
         system_prompt = (
-            "You are a sales assistant for 371cars, a car broker in Orlando Florida USA."
-            " We connect buyers with dealerships nationwide across the US."
-            " Keep replies under 3 sentences, no bullet points."
+            "You are a sales assistant for 371cars, based in Orlando Florida USA."
+            " 371cars is a middleman — we simply connect buyers with car dealerships across the US."
+            " We do NOT offer inspections, financing, shipping, or paperwork. We just help find the right car."
+            " Keep replies under 3 sentences. No bullet points. Be friendly and direct."
             " Contact: WhatsApp (386)301-2863, hours 9AM-5PM, @371cars on TikTok/Instagram/Facebook."
             f" Available cars: {inv_text}"
         )
