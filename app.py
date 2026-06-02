@@ -37,9 +37,14 @@ if database_url.startswith("postgres://"):
 
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+    "connect_args": {"options": "-c client_encoding=utf8"},
+    "pool_pre_ping": True,
+}
 app.config["UPLOAD_FOLDER"] = os.path.join(app.static_folder, "uploads")
 app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024  # 50 MB
 app.config["PREFERRED_URL_SCHEME"] = "https"
+app.config["JSON_AS_ASCII"] = False  # Preserve Arabic/Unicode in JSON responses
 
 ALLOWED_IMAGE_EXT = {"jpg", "jpeg", "png", "webp"}
 ALLOWED_VIDEO_EXT = {"mp4", "mov", "webm"}
@@ -167,7 +172,7 @@ def inject_globals():
 
 @app.route("/set-lang/<lang>")
 def set_lang(lang):
-    if lang in ("en", "ar"):
+    if lang in ("en", "ar", "es"):
         session["lang"] = lang
     return redirect(request.referrer or url_for("index"))
 
@@ -431,17 +436,32 @@ def api_chat():
             for c in inventory
         )
     else:
-        inv_text = "No cars currently available" if lang == "en" else "لا توجد سيارات متاحة رالياً"
+        if lang == "en":
+            inv_text = "No cars currently available"
+        elif lang == "ar":
+            inv_text = "لا توجد سيارات متاحة حالياً"
+        else:
+            inv_text = "No hay autos disponibles actualmente"
 
     if lang == "ar":
         system_prompt = (
             "أنت مساعد 371cars. نحن وسيط نربط المشترين بوكلاء السيارات والبائعين الأفراد في أمريكا."
-            " إذا أراد شخص بيع سيارته، ننشر إعلانه على وسائل التواصل الاجتماعي والموقع."
-            " لا نقدم فحوصات ولا تمويل ولا شحن - فقط نساعد في البيع والشراء."
-            " موقعنا أورلاندو فلوريدا ونعمل مع وكلاء وأفراد في جميع أنراء أمريكا."
-            " رد باللغة العربية، جملتان أو ثلاث كحد أقصى، لا تستخدم نقاط."
+            " ٥ذا أراد شخص بيع سيارته، ننشر ٥علانه على وسائل التواصل الاجتماعي والموقع."
+            " لا نقدم فحوصا֪ ولا تمويل ولا شحن - فيط نساعد في البيع والشراء."
+            " موقعنا أورلاندو فلوريدا ونعمل مع وكلاء وأفراد في جملتان أمريكا."
+            " رد بالعربية، جملتان أو ثلاث كحد أقصى، لا تستخدم نقاط."
             " واتساب: 3863012863، ساعا֪ العمل: 9 ص - 5 م."
             f" السيارات المتاحة: {inv_text}"
+        )
+    elif lang == "es":
+        system_prompt = (
+            "Eres un asistente de ventas de 371cars, con sede en Orlando Florida, EE.UU."
+            " 371cars es un intermediario — conectamos compradores con concesionarias Y vendedores privados en todo EE.UU."
+            " Si alguien quiere vender su auto, lo publicamos en nuestras redes sociales y sitio web."
+            " NO ofrecemos inspecciones, financiamiento, envíos ni papeleo. Solo ayudamos a comprar y vender autos."
+            " Responde en español, máximo 3 oraciones. Sin viñetas. Sé amable y directo."
+            " Contacto: WhatsApp (386)301-2863, horario 9AM-5PM, @371cars en TikTok/Instagram/Facebook."
+            f" Autos disponibles: {inv_text}"
         )
     else:
         system_prompt = (
@@ -487,7 +507,7 @@ def seed_data():
             make="Mercedes-Benz", model="S-Class", year=2023,
             price=450000, mileage=15000, color="Obsidian Black",
             description_en="Luxury flagship sedan with AMG package. Full options, panoramic roof, massage seats, night vision.",
-            description_ar="سيارة مرسيدس بنز S-Class الفاخرة مع باقة AMG.",
+            description_ar="سيارة مرسيدس بنز S-Class الفاخرة مع باوة AMG.",
             video_url="", is_sold=False,
         ),
         dict(
