@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{% block title %}{% if lang == 'ar' %}؅ضرض السيارا֪ الفاخرة{% else %}Luxury Cars Dealership{% endif %}{% endblock %}</title>
+  <title>{% block title %}{% if lang == 'ar' %}ØØ¶Ø±Ø¶ Ø§ÙØ³ÙØ§Ø±Ø§Öª Ø§ÙÙØ§Ø®Ø±Ø©{% else %}Luxury Cars Dealership{% endif %}{% endblock %}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -16,18 +16,18 @@
   <nav class="navbar">
     <div class="nav-inner">
       <a href="{{ url_for('index') }}" class="brand">
-        <span class="brand-icon">◆</span>
-        <span class="brand-text">{% if lang == 'ar' %}؅ضرض النخبة{% else %}Elite Motors{% endif %}</span>
+        <span class="brand-icon">â</span>
+        <span class="brand-text">{% if lang == 'ar' %}ØØ¶Ø±Ø¶ Ø§ÙÙØ®Ø¨Ø©{% else %}371cars{% endif %}</span>
       </a>
       <div class="nav-actions">
         <!-- Language toggle -->
         {% if lang == 'en' %}
-          <a href="{{ url_for('set_lang', lang='ar') }}" class="lang-btn">عربي</a>
+          <a href="{{ url_for('set_lang', lang='ar') }}" class="lang-btn">Ø¹Ø±Ø¨Ù</a>
         {% else %}
           <a href="{{ url_for('set_lang', lang='en') }}" class="lang-btn">English</a>
         {% endif %}
         <a href="{{ url_for('admin_login') }}" class="admin-link">
-          {% if lang == 'ar' %}لوحة التحكم{% else %}Admin{% endif %}
+          {% if lang == 'ar' %}ÙÙØ­Ø© Ø§ÙØªØ­ÙÙ{% else %}Admin{% endif %}
         </a>
       </div>
     </div>
@@ -52,7 +52,7 @@
   <!-- FOOTER -->
   <footer class="footer">
     <div class="footer-inner">
-      <p>{% if lang == 'ar' %}© ٢٠٢٤ معرض النخبة للسيارا֪ الفاخرة{% else %}© 2024 Elite Motors — Luxury Car Dealership{% endif %}</p>
+      <p>{% if lang == 'ar' %}Â© Ù¢Ù Ù¢Ù¤ ÙØ¹Ø±Ø¶ Ø§ÙÙØ®Ø¨Ø© ÙÙØ³ÙØ§Ø±Ø§Öª Ø§ÙÙØ§Ø®Ø±Ø©{% else %}Â© 2024 371cars â Luxury Car Dealership{% endif %}</p>
     </div>
   </footer>
 
@@ -66,21 +66,21 @@
   </a>
 
   <!-- AI CHAT WIDGET -->
-  <div id="chat-bubble" title="{{ 'مساعد ذكي' if lang == 'ar' else 'AI Assistant' }}">
+  <div id="chat-bubble" title="{{ 'ÙØ³Ø§Ø¹Ø¯ Ø°ÙÙ' if lang == 'ar' else 'AI Assistant' }}">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
   </div>
 
   <div id="chat-window" class="chat-hidden">
     <div id="chat-header">
-      <span>{{ 'مساعد النخبة' if lang == 'ar' else 'Elite Assistant' }}</span>
-      <button id="chat-close">✕</button>
+      <span>{{ 'ÙØ³Ø§Ø¹Ø¯ Ø§ÙÙØ®Ø¨Ø©' if lang == 'ar' else 'Elite Assistant' }}</span>
+      <button id="chat-close">â</button>
     </div>
     <div id="chat-messages">
-      <div class="chat-msg bot">{{ 'مرحباً! كيف يمكنني مساعدتك اليوم؟' if lang == 'ar' else 'Hi! How can I help you today?' }}</div>
+      <div class="chat-msg bot">{{ 'ÙØ±Ø­Ø¨Ø§Ù! ÙÙÙ ÙÙÙÙÙÙ ÙØ³Ø§Ø¹Ø¯ØªÙ Ø§ÙÙÙÙØ' if lang == 'ar' else 'Hi! How can I help you today?' }}</div>
     </div>
     <div id="chat-input-row">
-      <input id="chat-input" type="text" placeholder="{{ 'اكتب رسالتك...' if lang == 'ar' else 'Type a message...' }}" autocomplete="off" />
-      <button id="chat-send">➤</button>
+      <input id="chat-input" type="text" placeholder="{{ 'Ø§ÙØªØ¨ Ø±Ø³Ø§ÙØªÙ...' if lang == 'ar' else 'Type a message...' }}" autocomplete="off" />
+      <button id="chat-send">â¤</button>
     </div>
   </div>
 
@@ -214,7 +214,7 @@
         if (!text) return;
         input.value = '';
         addMsg(text, 'user');
-        const typing = addMsg(LANG === 'ar' ? 'جاري الكتابة...' : 'Typing…', 'bot typing');
+        const typing = addMsg(LANG === 'ar' ? 'Ø¬Ø§Ø±Ù Ø§ÙÙØªØ§Ø¨Ø©...' : 'Typingâ¦', 'bot typing');
         try {
           const res = await fetch('/api/chat', {
             method: 'POST',
@@ -226,7 +226,7 @@
           addMsg(data.reply || '...', 'bot');
         } catch(e) {
           typing.remove();
-          addMsg(LANG === 'ar' ? 'حدث خطأ، حاول مجدداً.' : 'Error, please try again.', 'bot');
+          addMsg(LANG === 'ar' ? 'Ø­Ø¯Ø« Ø®Ø·Ø£Ø Ø­Ø§ÙÙ ÙØ¬Ø¯Ø¯Ø§Ù.' : 'Error, please try again.', 'bot');
         }
       }
 
